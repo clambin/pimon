@@ -1,0 +1,16 @@
+version: '2'
+services:
+    test:
+        image: test
+        container_name: test
+        environment:
+            - TZ=Europe/Brussels
+        volumes:
+            - /sys/devices/virtual/thermal/thermal_zone0:/host/thermal:ro
+            - /sys/devices/system/cpu/cpu0/cpufreq:/host/cpufreq:ro
+        ports:
+            - 8081:8081/tcp
+        devices:
+            - "/dev/gpiomem:/dev/gpiomem"
+        command: --port 8081 --debug
+
