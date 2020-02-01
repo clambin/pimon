@@ -89,6 +89,7 @@ if __name__ == '__main__':
     parser.add_argument('--hostsys', default='/hostsys', help='Mountpoint of the host\'s /sys filesystem')
     parser.add_argument('--debug', action='store_true',  help='Set logging level to debug')
     parser.add_argument('--stub', action='store_true',  help='Use stubs')
+    parser.add_argument('--version', action='version', version='%(prog)s 0.2')
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
