@@ -1,3 +1,6 @@
+# Copyright 2020 by Christophe Lambin
+# All rights reserved.
+
 import time
 import argparse
 import logging

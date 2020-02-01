@@ -1,3 +1,6 @@
+# Copyright 2020 by Christophe Lambin
+# All rights reserved.
+
 # dummy file to test RPi.GPIO functions on Mac
 
 BCM = 0
