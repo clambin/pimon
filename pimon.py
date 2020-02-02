@@ -25,7 +25,6 @@ class Metric:
         return None
 
     def report(self):
-        logging.debug(f'Measuring metric {self.name}')
         val = self.measure()
         logging.debug(f'{self.name}: {val}')
         self.gauge.set(val)
