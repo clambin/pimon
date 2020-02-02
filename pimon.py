@@ -83,7 +83,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--wait', type=int, default=5, help='Time to wait between measurements')
     parser.add_argument('--port', type=int, default=8080, help='Prometheus port')
-    parser.add_argument('--hostsys', default='/hostsys', help='Mountpoint of the host\'s /sys filesystem')
+    parser.add_argument('--sysfs', default='/host/sys', help='Mountpoint of the host\'s /sys filesystem')
     parser.add_argument('--debug', action='store_true',  help='Set logging level to debug')
     parser.add_argument('--stub', action='store_true',  help='Use stubs')
     parser.add_argument('--version', action='version', version='%(prog)s 0.2')
@@ -93,8 +93,8 @@ if __name__ == '__main__':
     logging.info('Starting')
     logging.debug(f'Args: {vars(args)}')
 
-    temp_fname = './temp' if args.stub else f'{args.hostsys}/devices/virtual/thermal/thermal_zone0/temp'
-    freq_fname = './freq' if args.stub else f'{args.hostsys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
+    temp_fname = './temp' if args.stub else f'{args.sysfs}/devices/virtual/thermal/thermal_zone0/temp'
+    freq_fname = './freq' if args.stub else f'{args.sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
 
     reporter = Reporter(args.port)
     # FIXME: remove scale. should be dealt with in grafana dashboard
