@@ -7,7 +7,7 @@ LABEL version="0.0.2"
 RUN mkdir /app
 WORKDIR /app
 
-COPY *.py Pip* /app/
+COPY *.py freq temp Pip* /app/
 
 RUN apk update && \
     apk add gcc musl-dev
