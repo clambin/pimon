@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dd25da0c-a426-4bd4-b5b4-fc2e4f8f089a" name="Default Changelist" comment="" />
+    <list default="true" id="dd25da0c-a426-4bd4-b5b4-fc2e4f8f089a" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pimon.py" beforeDir="false" afterPath="$PROJECT_DIR$/pimon.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="pimon" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -26,9 +34,9 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="Docker" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.pimon">
     <configuration name="pimon" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pimon" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -50,6 +58,37 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Dockerfile" type="docker-deploy" factoryName="dockerfile" server-name="RPi">
+      <deployment type="dockerfile">
+        <settings>
+          <option name="buildCliOptions" value="" />
+          <option name="command" value="--debug" />
+          <option name="containerName" value="" />
+          <option name="entrypoint" value="" />
+          <option name="imageTag" value="test" />
+          <option name="portBindings">
+            <list>
+              <DockerPortBindingImpl>
+                <option name="containerPort" value="8080" />
+                <option name="hostPort" value="8080" />
+              </DockerPortBindingImpl>
+            </list>
+          </option>
+          <option name="commandLineOptions" value="" />
+          <option name="sourceFilePath" value="Dockerfile" />
+          <option name="volumeBindings">
+            <list>
+              <DockerVolumeBindingImpl>
+                <option name="containerPath" value="/hostsys" />
+                <option name="hostPath" value="/sys" />
+                <option name="readOnly" value="true" />
+              </DockerVolumeBindingImpl>
+            </list>
+          </option>
+        </settings>
+      </deployment>
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.pimon" />
@@ -61,12 +100,30 @@
       <list>
         <serviceView>
           <treeState>
-            <expand />
+            <expand>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="RPi" type="9fbbdea:ServiceModel$ServiceNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="RPi" type="9fbbdea:ServiceModel$ServiceNode" />
+                <item name="Containers" type="9fbbdea:ServiceModel$ServiceNode" />
+              </path>
+              <path>
+                <item name="services root" type="e789fda9:ObjectUtils$Sentinel" />
+                <item name="RPi" type="9fbbdea:ServiceModel$ServiceNode" />
+                <item name="Images" type="9fbbdea:ServiceModel$ServiceNode" />
+              </path>
+            </expand>
             <select />
           </treeState>
         </serviceView>
       </list>
     </option>
+  </component>
+  <component name="StructureViewFactory">
+    <option name="ACTIVE_ACTIONS" value=",SHOW_INHERITED,SHOW_FIELDS" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -81,31 +138,76 @@
     </task>
     <servers />
   </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="WindowStateProjectService">
-    <state x="872" y="267" key="#Dockerfile" timestamp="1580551941585">
+    <state x="763" y="360" key="#Docker" timestamp="1580654537897">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
-    <state x="872" y="267" key="#Dockerfile/0.23.2560.1326@0.23.2560.1326" timestamp="1580551941585" />
+    <state x="763" y="360" key="#Docker/0.23.2560.1326@0.23.2560.1326" timestamp="1580654537897" />
+    <state x="872" y="267" key="#Dockerfile" timestamp="1580658985382">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state x="872" y="267" key="#Dockerfile/0.23.2560.1326@0.23.2560.1326" timestamp="1580658985382" />
+    <state x="760" y="316" key="#Push_Image" timestamp="1580656448221">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state x="760" y="316" key="#Push_Image/0.23.2560.1326@0.23.2560.1326" timestamp="1580656448221" />
+    <state x="760" y="316" key="#TODO" timestamp="1580650896370">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state x="760" y="316" key="#TODO/0.23.2560.1326@0.23.2560.1326" timestamp="1580650896370" />
+    <state x="784" y="333" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog" timestamp="1580658729438">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state x="784" y="333" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.23.2560.1326@0.23.2560.1326" timestamp="1580658729438" />
     <state x="851" y="438" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1580553958406">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
     <state x="851" y="438" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.23.2560.1326@0.23.2560.1326" timestamp="1580553958406" />
-    <state width="1729" height="327" key="GridCell.Tab.0.bottom" timestamp="1580571443007">
+    <state x="793" y="253" key="CommitChangelistDialog2" timestamp="1580659331921">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
-    <state width="1729" height="327" key="GridCell.Tab.0.bottom/0.23.2560.1326@0.23.2560.1326" timestamp="1580571443007" />
-    <state width="1729" height="327" key="GridCell.Tab.0.center" timestamp="1580571443006">
+    <state x="793" y="253" key="CommitChangelistDialog2/0.23.2560.1326@0.23.2560.1326" timestamp="1580659331921" />
+    <state x="385" y="166" width="1550" height="970" key="DiffContextDialog" timestamp="1580659229156">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
-    <state width="1729" height="327" key="GridCell.Tab.0.center/0.23.2560.1326@0.23.2560.1326" timestamp="1580571443006" />
-    <state width="1729" height="327" key="GridCell.Tab.0.left" timestamp="1580571443005">
+    <state x="385" y="166" width="1550" height="970" key="DiffContextDialog/0.23.2560.1326@0.23.2560.1326" timestamp="1580659229156" />
+    <state width="1729" height="327" key="GridCell.Tab.0.bottom" timestamp="1580657222416">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
-    <state width="1729" height="327" key="GridCell.Tab.0.left/0.23.2560.1326@0.23.2560.1326" timestamp="1580571443005" />
-    <state width="1729" height="327" key="GridCell.Tab.0.right" timestamp="1580571443006">
+    <state width="1729" height="327" key="GridCell.Tab.0.bottom/0.23.2560.1326@0.23.2560.1326" timestamp="1580657222416" />
+    <state width="1729" height="327" key="GridCell.Tab.0.center" timestamp="1580657222416">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
-    <state width="1729" height="327" key="GridCell.Tab.0.right/0.23.2560.1326@0.23.2560.1326" timestamp="1580571443006" />
+    <state width="1729" height="327" key="GridCell.Tab.0.center/0.23.2560.1326@0.23.2560.1326" timestamp="1580657222416" />
+    <state width="1729" height="327" key="GridCell.Tab.0.left" timestamp="1580657222415">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state width="1729" height="327" key="GridCell.Tab.0.left/0.23.2560.1326@0.23.2560.1326" timestamp="1580657222415" />
+    <state width="1729" height="327" key="GridCell.Tab.0.right" timestamp="1580657222416">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state width="1729" height="327" key="GridCell.Tab.0.right/0.23.2560.1326@0.23.2560.1326" timestamp="1580657222416" />
     <state width="1729" height="402" key="GridCell.Tab.1.bottom" timestamp="1580568126264">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
@@ -122,21 +224,33 @@
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
     <state width="1729" height="402" key="GridCell.Tab.1.right/0.23.2560.1326@0.23.2560.1326" timestamp="1580568126264" />
-    <state x="1251" y="480" key="SettingsEditor" timestamp="1580561618956">
+    <state x="955" y="369" key="RollbackChangesDialog" timestamp="1580659276737">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
-    <state x="1251" y="480" key="SettingsEditor/0.23.2560.1326@0.23.2560.1326" timestamp="1580561618956" />
-    <state x="842" y="527" key="com.intellij.ide.util.TipDialog" timestamp="1580568193942">
+    <state x="955" y="369" key="RollbackChangesDialog/0.23.2560.1326@0.23.2560.1326" timestamp="1580659276737" />
+    <state x="60" y="250" key="SettingsEditor" timestamp="1580658934418">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
-    <state x="842" y="527" key="com.intellij.ide.util.TipDialog/0.23.2560.1326@0.23.2560.1326" timestamp="1580568193942" />
+    <state x="60" y="250" key="SettingsEditor/0.23.2560.1326@0.23.2560.1326" timestamp="1580658934418" />
+    <state x="925" y="431" key="com.intellij.docker.deployment.ui.DockerPortBindingsField.v173.dialogSize" timestamp="1580658983077">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state x="925" y="431" key="com.intellij.docker.deployment.ui.DockerPortBindingsField.v173.dialogSize/0.23.2560.1326@0.23.2560.1326" timestamp="1580658983077" />
+    <state x="925" y="431" key="com.intellij.docker.deployment.ui.DockerVolumeBindingsField.v173.dialogSize" timestamp="1580658957256">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state x="925" y="431" key="com.intellij.docker.deployment.ui.DockerVolumeBindingsField.v173.dialogSize/0.23.2560.1326@0.23.2560.1326" timestamp="1580658957256" />
+    <state x="842" y="527" key="com.intellij.ide.util.TipDialog" timestamp="1580654063210">
+      <screen x="0" y="23" width="2560" height="1326" />
+    </state>
+    <state x="842" y="527" key="com.intellij.ide.util.TipDialog/0.23.2560.1326@0.23.2560.1326" timestamp="1580654063210" />
     <state x="728" y="438" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1580552993112">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
     <state x="728" y="438" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.2560.1326@0.23.2560.1326" timestamp="1580552993112" />
-    <state x="828" y="373" width="670" height="676" key="search.everywhere.popup" timestamp="1580559892004">
+    <state x="828" y="373" width="670" height="676" key="search.everywhere.popup" timestamp="1580658799064">
       <screen x="0" y="23" width="2560" height="1326" />
     </state>
-    <state x="828" y="373" width="670" height="676" key="search.everywhere.popup/0.23.2560.1326@0.23.2560.1326" timestamp="1580559892004" />
+    <state x="828" y="373" width="670" height="676" key="search.everywhere.popup/0.23.2560.1326@0.23.2560.1326" timestamp="1580658799064" />
   </component>
 </project>

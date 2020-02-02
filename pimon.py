@@ -34,7 +34,6 @@ class FileMetric(Metric):
     def __init__(self, name, description, fname, divider):
         super().__init__(name, description)
         self.fname = fname
-        # FIXME: remove this. scale should be dealt with in grafana dashboard
         self.divider = divider
 
     def __str__(self):
@@ -43,7 +42,6 @@ class FileMetric(Metric):
     def measure(self):
         f = open(self.fname)
         data = f.readline()
-        #logging.debug(f'Raw data: [{data}]')
         f.close()
         data = float(data)/self.divider
         return data
@@ -99,9 +97,13 @@ if __name__ == '__main__':
     freq_fname = './freq' if args.stub else f'{args.hostsys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
 
     reporter = Reporter(args.port)
-    reporter.add(FileMetric('pimon_temperature', 'CPU temperature', temp_fname, 1000))
+    # FIXME: remove scale. should be dealt with in grafana dashboard
     reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', freq_fname, 1000000))
-    reporter.add(GPIOMetric('pimon_fan', 'RPI Fan Status', 18))
+    reporter.add(FileMetric('pimon_temperature', 'CPU temperature', temp_fname, 1000))
+    try:
+        reporter.add(GPIOMetric('pimon_fan', 'RPI Fan Status', 18))
+    except RuntimeError:
+        logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
 
     try:
         reporter.start()

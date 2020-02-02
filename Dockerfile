@@ -9,6 +9,7 @@ WORKDIR /app
 
 COPY *.py freq temp Pip* /app/
 
+# TODO: remove gcc & musl-dev after install for a smaller image?
 RUN apk update && \
     apk add gcc musl-dev
 
