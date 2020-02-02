@@ -26,7 +26,7 @@ services:
 
 Pimom exposes the following metrics to Prometheus:
 
-* pimon_clockspeed:  CPU clock speed (in GHz)
+* pimon_clockspeed:  CPU clock speed (in Hz)
 * pimon_temperature: CPU temperature (in ºC)
 * pimon_fan:         Fan status (0: off, 1: on)
 

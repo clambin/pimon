@@ -31,7 +31,7 @@ class Metric:
 
 
 class FileMetric(Metric):
-    def __init__(self, name, description, fname, divider):
+    def __init__(self, name, description, fname, divider=1):
         super().__init__(name, description)
         self.fname = fname
         self.divider = divider
@@ -97,8 +97,7 @@ if __name__ == '__main__':
     freq_fname = './freq' if args.stub else f'{args.sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
 
     reporter = Reporter(args.port)
-    # FIXME: remove scale. should be dealt with in grafana dashboard
-    reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', freq_fname, 1000000))
+    reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', freq_fname))
     reporter.add(FileMetric('pimon_temperature', 'CPU temperature', temp_fname, 1000))
     try:
         reporter.add(GPIOMetric('pimon_fan', 'RPI Fan Status', 18))
