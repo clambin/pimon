@@ -70,7 +70,7 @@ will only measure every 20 seconds.
 
 ## Authors
 
-* **Christophe Lambin**  [PurpleBooth](https://github.com/PurpleBooth)
+* **Christophe Lambin**
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
