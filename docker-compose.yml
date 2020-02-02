@@ -2,7 +2,8 @@ version: '2'
 services:
     pimon:
         build: .
-        container_name: pimon
+        image: clambin/pimon:dev
+        container_name: pimon.new
         volumes:
             - /sys:/host/sys:ro
         ports:
