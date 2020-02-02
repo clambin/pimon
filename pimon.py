@@ -81,11 +81,11 @@ class Reporter:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--wait', type=int, default=5, help='Time to wait between measurements')
-    parser.add_argument('--port', type=int, default=8080, help='Prometheus port')
-    parser.add_argument('--sysfs', default='/host/sys', help='Mountpoint of the host\'s /sys filesystem')
-    parser.add_argument('--debug', action='store_true',  help='Set logging level to debug')
+    parser.add_argument('--wait', type=int, default=5, help='Time to wait between measurements (default: 5 sec))
+    parser.add_argument('--port', type=int, default=8080, help='Prometheus port (default: 8080')
+    parser.add_argument('--sysfs', default='/host/sys', help='Location of the /sys filesystem (default: /host/sys')
     parser.add_argument('--stub', action='store_true',  help='Use stubs')
+    parser.add_argument('--debug', action='store_true',  help='Set logging level to debug')
     parser.add_argument('--version', action='version', version='%(prog)s 0.2')
     args = parser.parse_args()
 

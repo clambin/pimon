@@ -40,11 +40,11 @@ usage: pimon.py [-h] [--wait WAIT] [--port PORT] [--sysfs SYSFS] [--debug]
 
 optional arguments:
   -h, --help     show this help message and exit
-  --wait WAIT    Time to wait between measurements
-  --port PORT    Prometheus port
-  --sysfs SYSFS  Mountpoint of the host's /sys filesystem
-  --debug        Set logging level to debug
+  --wait WAIT    Time to wait between measurements (default: 5 sec)
+  --port PORT    Prometheus port (default: 8080)
+  --sysfs SYSFS  Location of the /sys filesystem (default: /host/sys)
   --stub         Use stubs
+  --debug        Set logging level to debug
   --version      show program's version number and exit
 
 ```
