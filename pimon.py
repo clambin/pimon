@@ -79,22 +79,29 @@ class Reporter:
             self.metrics[metric].report()
 
 
+VERSION 0.2
+DEFAULT_WAIT = 5
+DEFAULT_PORT = 8080
+DEFAULT_SYS = '/sys'
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--wait', type=int, default=5, help='Time to wait between measurements (default: 5 sec))
-    parser.add_argument('--port', type=int, default=8080, help='Prometheus port (default: 8080')
-    parser.add_argument('--sysfs', default='/host/sys', help='Location of the /sys filesystem (default: /host/sys')
+    parser.add_argument('--wait', type=int, default=DEFAULT_WAIT,
+                        help=f'Time between measurements (default: {DEFAULT_WAIT} sec')
+    parser.add_argument('--port', type=int, default=DEFAULT_PORT,
+                        help=f'Prometheus port (default: {DEFAULT_PORT})')
+    parser.add_argument('--sys', default=DEFAULT_SYS, help=f'Location of the /sys filesystem (default: {DEFAULT_SYS})')
     parser.add_argument('--stub', action='store_true',  help='Use stubs')
     parser.add_argument('--debug', action='store_true',  help='Set logging level to debug')
-    parser.add_argument('--version', action='version', version='%(prog)s 0.2')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {VERSION}')
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
     logging.info('Starting')
     logging.debug(f'Args: {vars(args)}')
 
-    temp_fname = './temp' if args.stub else f'{args.sysfs}/devices/virtual/thermal/thermal_zone0/temp'
-    freq_fname = './freq' if args.stub else f'{args.sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
+    temp_fname = './temp' if args.stub else f'{args.sys}/devices/virtual/thermal/thermal_zone0/temp'
+    freq_fname = './freq' if args.stub else f'{args.sys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
 
     reporter = Reporter(args.port)
     reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', freq_fname))
@@ -113,4 +120,3 @@ if __name__ == '__main__':
     while True:
         reporter.report()
         time.sleep(args.wait)
-

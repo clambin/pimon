@@ -14,6 +14,7 @@ services:
   pimon:
     image: clambin/pimon
     container_name: pimon
+    command: --sys /host/sys
     volumes:
       - /sys:/host/sys:ro
     ports:
@@ -35,38 +36,19 @@ Pimom exposes the following metrics to Prometheus:
 The following command line arguments can be passed to pimon (in case of docker-compose, via a command):
 
 ```
-usage: pimon.py [-h] [--wait WAIT] [--port PORT] [--sysfs SYSFS] [--debug]
+usage: pimon.py [-h] [--wait WAIT] [--port PORT] [--sys SYS] [--debug]
                 [--stub] [--version]
 
 optional arguments:
   -h, --help     show this help message and exit
   --wait WAIT    Time to wait between measurements (default: 5 sec)
   --port PORT    Prometheus port (default: 8080)
-  --sysfs SYSFS  Location of the /sys filesystem (default: /host/sys)
+  --sys SYS      Location of the /sys filesystem (default: /sys)
   --stub         Use stubs
   --debug        Set logging level to debug
   --version      show program's version number and exit
 
 ```
-
-Example:
-
-```
-version: '2'
-services:
-  pimon:
-    image: clambin/pimon
-    container_name: pimon
-    command: --wait 20
-    volumes:
-      - /sys:/host/sys:ro
-    ports:
-      - 8080:8080/tcp
-    devices:
-      - /dev/gpiomem:/dev/gpiomem
-```
-
-will only measure every 20 seconds.
 
 ## Authors
 
