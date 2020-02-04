@@ -2,12 +2,13 @@ version: '2'
 services:
     pimon:
         build: .
-        image: clambin/pimon:dev
-        container_name: pimon.new
+        container_name: pimon
+        image: clambin/pimon
+        command: --sys /host/sys --debug
         volumes:
             - /sys:/host/sys:ro
         ports:
-            - "8080:8080/tcp"
+            - 8080:8080/tcp
         devices:
-            - "/dev/gpiomem:/dev/gpiomem"
+            - /dev/gpiomem:/dev/gpiomem
 
