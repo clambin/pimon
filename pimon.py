@@ -79,7 +79,7 @@ class Reporter:
             self.metrics[metric].report()
 
 
-VERSION 0.2
+VERSION = '0.2'
 DEFAULT_WAIT = 5
 DEFAULT_PORT = 8080
 DEFAULT_SYS = '/sys'
