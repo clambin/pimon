@@ -33,7 +33,7 @@ Pimom exposes the following metrics to Prometheus:
 
 ### Command line arguments:
 
-The following command line arguments can be passed to pimon (in case of docker-compose, via a command):
+The following command line arguments can be passed to pimon:
 
 ```
 usage: pimon.py [-h] [--wait WAIT] [--port PORT] [--sys SYS] [--debug]
