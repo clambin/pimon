@@ -1,8 +1,5 @@
 FROM python:3.7-alpine
-
-LABEL Author="Christophe Lambin"
-LABEL E-mail="christophe.lambin@gmail.com"
-LABEL version="0.2"
+MAINTAINER Christophe Lambin <christophe.lambin@gmail.com>
 
 RUN mkdir /app
 WORKDIR /app
