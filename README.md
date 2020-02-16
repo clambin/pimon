@@ -12,7 +12,7 @@ Pimon can be installed in a Docker container via docker-compose:
 version: '2'
 services:
   pimon:
-    image: clambin/pimon
+    image: clambin/pimon:latest
     container_name: pimon
     command: --sys /host/sys
     volumes:
