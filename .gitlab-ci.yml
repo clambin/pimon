@@ -20,7 +20,7 @@ stages:
       - "Dockerfile*"
       - .gitlab-ci.yml
   before_script:
-    - export VERSION=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \");
+    - export VERSION=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
     - echo $VERSION
     - echo $CI_COMMIT_REF_NAME
     - if [[ $CI_COMMIT_REF_NAME == "master" ]]; then
