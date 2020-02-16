@@ -83,31 +83,43 @@ class Reporter:
             self.metrics[metric].report()
 
 
-# TODO: adapt from pinger
-DEFAULT_WAIT = 5
-DEFAULT_PORT = 8080
-DEFAULT_SYS = '/sys'
+def get_config():
+    default_interval = 5
+    default_port = 8080
+    default_sys = '/sys'
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version', version=f'%(prog)s {version.version}')
+    parser.add_argument('--interval', type=int, default=default_interval,
+                        help=f'Time between measurements (default: {default_interval} sec)')
+    parser.add_argument('--port', type=int, default=default_port,
+                        help=f'Prometheus port (default: {default_port})')
+    parser.add_argument('--sys', default=default_sys,
+                        help=f'Location of the /sys filesystem (default: {default_sys})')
+    parser.add_argument('--once', action='store_true',
+                        help='Measure once and then terminate')
+    parser.add_argument('--stub', action='store_true',
+                        help='Use stubs (for debugging only')
+    parser.add_argument('--debug', action='store_true',
+                        help='Set logging level to debug')
+    return parser.parse_args()
+
+
+def print_config(cfg):
+    return ', '.join([f'{key}={val}' for key, val in vars(cfg).items()])
+
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--wait', type=int, default=DEFAULT_WAIT,
-                        help=f'Time between measurements (default: {DEFAULT_WAIT} sec')
-    parser.add_argument('--port', type=int, default=DEFAULT_PORT,
-                        help=f'Prometheus port (default: {DEFAULT_PORT})')
-    parser.add_argument('--sys', default=DEFAULT_SYS, help=f'Location of the /sys filesystem (default: {DEFAULT_SYS})')
-    parser.add_argument('--stub', action='store_true', help='Use stubs')
-    parser.add_argument('--debug', action='store_true', help='Set logging level to debug')
-    parser.add_argument('--version', action='version', version=f'%(prog)s {version}')
-    args = parser.parse_args()
+    config = get_config()
+    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
+                        level=logging.DEBUG if config.debug else logging.INFO)
+    logging.info('Starting.')
+    logging.info(f'Configuration: {print_config(config)}')
 
-    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
-    logging.info('Starting')
-    logging.debug(f'Args: {vars(args)}')
+    temp_fname = './temp' if config.stub else f'{config.sys}/devices/virtual/thermal/thermal_zone0/temp'
+    freq_fname = './freq' if config.stub else f'{config.sys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
 
-    temp_fname = './temp' if args.stub else f'{args.sys}/devices/virtual/thermal/thermal_zone0/temp'
-    freq_fname = './freq' if args.stub else f'{args.sys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
-
-    reporter = Reporter(args.port)
+    reporter = Reporter(config.port)
     reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', freq_fname))
     reporter.add(FileMetric('pimon_temperature', 'CPU temperature', temp_fname, 1000))
     try:
@@ -118,9 +130,10 @@ if __name__ == '__main__':
     try:
         reporter.start()
     except OSError as err:
-        print(f"Could not start prometheus client on port {args.port}: {err}")
+        print(f"Could not start prometheus client on port {config.port}: {err}")
         exit(1)
 
     while True:
         reporter.report()
-        time.sleep(args.wait)
+        if config.once: break
+        time.sleep(config.interval)
