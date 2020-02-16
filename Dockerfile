@@ -5,8 +5,8 @@ MAINTAINER Christophe Lambin <christophe.lambin@gmail.com>
 RUN mkdir /app
 WORKDIR /app
 
-COPY *.py Pip* /app/
-COPY metrics/*.py /app/metrics
+COPY *.py Pip* ./
+COPY metrics/*.py metrics/
 
 RUN apk update && \
     apk --no-cache --virtual .build-deps add gcc musl-dev && \
