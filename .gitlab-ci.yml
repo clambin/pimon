@@ -30,7 +30,6 @@ stages:
       fi
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
     - export CI_PROJECT_PATH=$(echo $CI_PROJECT_PATH | tr "[:upper:]" "[:lower:]")
-    - echo $CI_PROJECT_PATH:$TAG
 
 .common_release:
   extends: .common_build

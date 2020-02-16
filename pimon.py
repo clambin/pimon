@@ -90,7 +90,7 @@ if __name__ == '__main__':
     config = get_config()
     logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
                         level=logging.DEBUG if config.debug else logging.INFO)
-    logging.info('Starting.')
+    logging.info(f'Starting pimon v{version.version}')
     logging.info(f'Configuration: {print_config(config)}')
 
     pimon(config)
