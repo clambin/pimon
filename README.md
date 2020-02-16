@@ -36,18 +36,18 @@ Pimom exposes the following metrics to Prometheus:
 The following command line arguments can be passed to pimon:
 
 ```
-usage: pimon.py [-h] [--wait WAIT] [--port PORT] [--sys SYS] [--debug]
-                [--stub] [--version]
+usage: pimon.py [-h] [--version] [--interval INTERVAL] [--port PORT]
+                [--sys SYS] [--once] [--stub] [--debug]
 
 optional arguments:
-  -h, --help     show this help message and exit
-  --wait WAIT    Time to wait between measurements (default: 5 sec)
-  --port PORT    Prometheus port (default: 8080)
-  --sys SYS      Location of the /sys filesystem (default: /sys)
-  --stub         Use stubs
-  --debug        Set logging level to debug
-  --version      show program's version number and exit
-
+  -h, --help           show this help message and exit
+  --version            show program's version number and exit
+  --interval INTERVAL  Time between measurements (default: 5 sec)
+  --port PORT          Prometheus port (default: 8080)
+  --sys SYS            Location of the /sys filesystem (default: /sys)
+  --once               Measure once and then terminate
+  --stub               Use stubs (for debugging only
+  --debug              Set logging level to debug
 ```
 
 ## Authors
