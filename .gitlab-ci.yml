@@ -76,12 +76,7 @@ arm:
 
 github:
   # FIXME: what's a suitable (light) image for this?
-  # image: python:3.7-alpine
-  tags:
-    - linux
-    - shell
-    - light
-    - shared
+  image: python:3.7-alpine
   only:
     refs:
       - master
