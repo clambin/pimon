@@ -4,7 +4,8 @@
 import time
 import argparse
 import logging
-from prometheus_client import start_http_server, Gauge
+
+from metrics import Metric, FileMetric, Reporter
 
 import version
 
@@ -13,42 +14,6 @@ try:
 except ModuleNotFoundError:
     # Use a stub instead
     import GPIO
-
-
-# TODO: align with Pinger
-class Metric:
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
-        self.gauge = Gauge(name, description)
-
-    def __str__(self):
-        return ""
-
-    def measure(self):
-        return None
-
-    def report(self):
-        val = self.measure()
-        logging.debug(f'{self.name}: {val}')
-        self.gauge.set(val)
-
-
-class FileMetric(Metric):
-    def __init__(self, name, description, fname, divider=1):
-        super().__init__(name, description)
-        self.fname = fname
-        self.divider = divider
-
-    def __str__(self):
-        return self.fname
-
-    def measure(self):
-        f = open(self.fname)
-        data = f.readline()
-        f.close()
-        data = float(data) / self.divider
-        return data
 
 
 class GPIOMetric(Metric):
@@ -64,23 +29,6 @@ class GPIOMetric(Metric):
 
     def measure(self):
         return GPIO.input(self.pin)
-
-
-class Reporter:
-    def __init__(self, portno):
-        self.portno = portno
-        self.metrics = {}
-
-    def start(self):
-        start_http_server(self.portno)
-
-    def add(self, metric):
-        logging.info(f'New metric {metric.name} for {metric}')
-        self.metrics[metric.name] = metric
-
-    def report(self):
-        for metric in self.metrics.keys():
-            self.metrics[metric].report()
 
 
 def get_config():
@@ -104,9 +52,9 @@ def get_config():
                         help='Set logging level to debug')
     args = parser.parse_args()
     setattr(args, 'temp_filename',
-            './temp' if args.stub else f'{args.sys}/devices/virtual/thermal/thermal_zone0/temp')
+            'tests/temp' if args.stub else f'{args.sys}/devices/virtual/thermal/thermal_zone0/temp')
     setattr(args, 'freq_filename',
-            './freq' if args.stub else f'{args.sys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
+            'tests/freq' if args.stub else f'{args.sys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
     return args
 
 
@@ -119,6 +67,7 @@ def pimon(config):
     reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', config.freq_filename))
     reporter.add(FileMetric('pimon_temperature', 'CPU temperature', config.temp_filename, 1000))
     try:
+        # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
         reporter.add(GPIOMetric('pimon_fan', 'RPI Fan Status', 18))
     except RuntimeError:
         logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
@@ -130,7 +79,7 @@ def pimon(config):
         return 1
 
     while True:
-        reporter.report()
+        reporter.run()
         if config.once:
             break
         time.sleep(config.interval)

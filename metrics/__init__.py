@@ -66,8 +66,7 @@ class Metric:
 
     def run(self):
         val = self.measure()
-        if val:
-            logging.debug(f'{self.name}: {val}')
+        if val is not None:
             self.report(val)
 
 
