@@ -102,26 +102,22 @@ def get_config():
                         help='Use stubs (for debugging only')
     parser.add_argument('--debug', action='store_true',
                         help='Set logging level to debug')
-    return parser.parse_args()
+    args = parser.parse_args()
+    setattr(args, 'temp_filename',
+            './temp' if args.stub else f'{args.sys}/devices/virtual/thermal/thermal_zone0/temp')
+    setattr(args, 'freq_filename',
+            './freq' if args.stub else f'{args.sys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
+    return args
 
 
-def print_config(cfg):
-    return ', '.join([f'{key}={val}' for key, val in vars(cfg).items()])
+def print_config(config):
+    return ', '.join([f'{key}={val}' for key, val in vars(config).items()])
 
 
-if __name__ == '__main__':
-    config = get_config()
-    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
-                        level=logging.DEBUG if config.debug else logging.INFO)
-    logging.info('Starting.')
-    logging.info(f'Configuration: {print_config(config)}')
-
-    temp_fname = './temp' if config.stub else f'{config.sys}/devices/virtual/thermal/thermal_zone0/temp'
-    freq_fname = './freq' if config.stub else f'{config.sys}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq'
-
+def pimon(config):
     reporter = Reporter(config.port)
-    reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', freq_fname))
-    reporter.add(FileMetric('pimon_temperature', 'CPU temperature', temp_fname, 1000))
+    reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', config.freq_filename))
+    reporter.add(FileMetric('pimon_temperature', 'CPU temperature', config.temp_filename, 1000))
     try:
         reporter.add(GPIOMetric('pimon_fan', 'RPI Fan Status', 18))
     except RuntimeError:
@@ -131,10 +127,21 @@ if __name__ == '__main__':
         reporter.start()
     except OSError as err:
         print(f"Could not start prometheus client on port {config.port}: {err}")
-        exit(1)
+        return 1
 
     while True:
         reporter.report()
         if config.once:
             break
         time.sleep(config.interval)
+    return 0
+
+
+if __name__ == '__main__':
+    config = get_config()
+    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
+                        level=logging.DEBUG if config.debug else logging.INFO)
+    logging.info('Starting.')
+    logging.info(f'Configuration: {print_config(config)}')
+
+    pimon(config)
