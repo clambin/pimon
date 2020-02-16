@@ -3,8 +3,8 @@ services:
     pimon:
         build: .
         container_name: pimon
-        image: clambin/pimon
-        command: --sys /host/sys --debug
+        image: clambin/pimon:latest
+        command: --sys /host/sys
         volumes:
             - /sys:/host/sys:ro
         ports:

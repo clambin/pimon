@@ -5,6 +5,9 @@ import time
 import argparse
 import logging
 from prometheus_client import start_http_server, Gauge
+
+import version
+
 try:
     import RPi.GPIO as GPIO
 except ModuleNotFoundError:
@@ -12,6 +15,7 @@ except ModuleNotFoundError:
     import GPIO
 
 
+# TODO: align with Pinger
 class Metric:
     def __init__(self, name, description):
         self.name = name
@@ -43,7 +47,7 @@ class FileMetric(Metric):
         f = open(self.fname)
         data = f.readline()
         f.close()
-        data = float(data)/self.divider
+        data = float(data) / self.divider
         return data
 
 
@@ -78,8 +82,7 @@ class Reporter:
         for metric in self.metrics.keys():
             self.metrics[metric].report()
 
-
-VERSION = '0.2'
+# TODO: adapt from pinger
 DEFAULT_WAIT = 5
 DEFAULT_PORT = 8080
 DEFAULT_SYS = '/sys'
@@ -91,9 +94,9 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=DEFAULT_PORT,
                         help=f'Prometheus port (default: {DEFAULT_PORT})')
     parser.add_argument('--sys', default=DEFAULT_SYS, help=f'Location of the /sys filesystem (default: {DEFAULT_SYS})')
-    parser.add_argument('--stub', action='store_true',  help='Use stubs')
-    parser.add_argument('--debug', action='store_true',  help='Set logging level to debug')
-    parser.add_argument('--version', action='version', version=f'%(prog)s {VERSION}')
+    parser.add_argument('--stub', action='store_true', help='Use stubs')
+    parser.add_argument('--debug', action='store_true', help='Set logging level to debug')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {version}')
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
