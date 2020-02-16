@@ -11,11 +11,14 @@ OUT = 1
 def setwarnings(set):
     pass
 
+
 def setmode(mode):
     pass
 
+
 def setup(pin, mode):
     pass
+
 
 def input(pin):
     return 0
