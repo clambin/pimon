@@ -135,5 +135,6 @@ if __name__ == '__main__':
 
     while True:
         reporter.report()
-        if config.once: break
+        if config.once:
+            break
         time.sleep(config.interval)
