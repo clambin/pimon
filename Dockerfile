@@ -5,7 +5,8 @@ MAINTAINER Christophe Lambin <christophe.lambin@gmail.com>
 RUN mkdir /app
 WORKDIR /app
 
-COPY *.py freq temp Pip* /app/
+COPY *.py Pip* /app/
+COPY metrics/*.py /app/metrics
 
 RUN apk update && \
     apk --no-cache --virtual .build-deps add gcc musl-dev && \
