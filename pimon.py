@@ -82,6 +82,7 @@ class Reporter:
         for metric in self.metrics.keys():
             self.metrics[metric].report()
 
+
 # TODO: adapt from pinger
 DEFAULT_WAIT = 5
 DEFAULT_PORT = 8080
