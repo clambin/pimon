@@ -36,7 +36,6 @@ stages:
   services:
     - docker:stable-dind
 
-
 flake8:
   image: python:3.7-alpine
   stage: test
@@ -46,6 +45,17 @@ flake8:
     - pip install -U flake8
   script:
     - flake8 --max-line-length 120 *.py metric/*.py
+
+pytest:
+  image: python:3.7-alpine
+  stage: test
+  before_script:
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install pipenv
+    - pipenv install
+  script:
+    - cd tests && pytest
 
 arm:
   extends: .common_build
