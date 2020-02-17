@@ -44,6 +44,8 @@ def get_config():
                         help=f'Prometheus port (default: {default_port})')
     parser.add_argument('--sys', default=default_sys,
                         help=f'Location of the /sys filesystem (default: {default_sys})')
+    parser.add_argument('--enable-monitor-fan', action='store_true',
+                        help='Enables monitoring the fan status')
     parser.add_argument('--once', action='store_true',
                         help='Measure once and then terminate')
     parser.add_argument('--stub', action='store_true',
@@ -67,8 +69,9 @@ def pimon(config):
     reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', config.freq_filename))
     reporter.add(FileMetric('pimon_temperature', 'CPU temperature', config.temp_filename, 1000))
     try:
-        # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
-        reporter.add(GPIOMetric('pimon_fan', 'RPI Fan Status', 18))
+        if config.enable_monitor_fan:
+            # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
+            reporter.add(GPIOMetric('pimon_fan', 'RPI Fan Status', 18))
     except RuntimeError:
         logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
 
