@@ -92,7 +92,7 @@ build_arm:
 test_arm:
   stage : smoke
   extends:
-    - .docker
+    - .docker_rpi
     - .build_only
   script:
     - docker run "$CI_PROJECT_PATH":"$TAG" --once
