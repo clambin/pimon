@@ -95,11 +95,7 @@ test_arm:
     - .docker_rpi
     - .build_only
   script:
-    - ls tests
-    - echo 100000 > tests/temp
-    - echo 600000 > tests/freq
-    - docker run "$CI_PROJECT_PATH":"$TAG" --once --stub --enable-monitor-fan
-    - rm -rf tests
+    - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$TAG" --once --stub --debug
 
 publish:
   stage: release
