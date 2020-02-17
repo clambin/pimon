@@ -14,7 +14,7 @@ services:
   pimon:
     image: clambin/pimon:latest
     container_name: pimon
-    command: --sys /host/sys
+    command: --sys /host/sys --enable-monitor-fan
     volumes:
       - /sys:/host/sys:ro
     ports:
@@ -37,17 +37,18 @@ The following command line arguments can be passed to pimon:
 
 ```
 usage: pimon.py [-h] [--version] [--interval INTERVAL] [--port PORT]
-                [--sys SYS] [--once] [--stub] [--debug]
+                [--sys SYS] [--enable-monitor-fan] [--once] [--stub] [--debug]
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --version            show program's version number and exit
-  --interval INTERVAL  Time between measurements (default: 5 sec)
-  --port PORT          Prometheus port (default: 8080)
-  --sys SYS            Location of the /sys filesystem (default: /sys)
-  --once               Measure once and then terminate
-  --stub               Use stubs (for debugging only
-  --debug              Set logging level to debug
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --interval INTERVAL   Time between measurements (default: 5 sec)
+  --port PORT           Prometheus port (default: 8080)
+  --sys SYS             Location of the /sys filesystem (default: /sys)
+  --enable-monitor-fan  Enables monitoring the fan status
+  --once                Measure once and then terminate
+  --stub                Use stubs (for debugging only
+  --debug               Set logging level to debug
 ```
 
 ## Authors
