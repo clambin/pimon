@@ -61,6 +61,7 @@ flake8:
 
 pytest:
   stage: test
+  extends: .test_only
   image: python:3.7-alpine
   before_script:
     - python -m venv venv
@@ -90,7 +91,6 @@ publish:
   extends: .docker_build
   tags:
     - docker
-    - shared
   only:
     - master
   script:
@@ -98,7 +98,6 @@ publish:
     - docker push "$CI_PROJECT_PATH":latest
 
 github:
-  # FIXME: what's a suitable (light) image for this?
   stage: release
   only:
     - master
