@@ -16,7 +16,7 @@ stages:
       - "*.py"
       - "metrics/*.py"
       - "Dockerfile*"
-      - .gitlab-ci.yml
+#     - .gitlab-ci.yml
 
 .docker:
   image: docker:stable
@@ -95,7 +95,7 @@ test_arm:
     - .docker_rpi
     - .build_only
   script:
-    - mkdir tests
+    - ls tests
     - echo 100000 > tests/temp
     - echo 600000 > tests/freq
     - docker run "$CI_PROJECT_PATH":"$TAG" --once --stub --enable-monitor-fan
