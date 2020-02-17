@@ -16,7 +16,7 @@ stages:
       - "*.py"
       - "metrics/*.py"
       - "Dockerfile*"
-#     - .gitlab-ci.yml
+      - .gitlab-ci.yml
 
 .docker:
   image: docker:stable
@@ -29,6 +29,7 @@ stages:
     - tags
   tags:
     - docker
+    - shared
   before_script:
     # TODO: wrap TAG logic in a script and call that when needed?
     - export VERSION=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
