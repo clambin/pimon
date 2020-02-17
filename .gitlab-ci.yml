@@ -100,9 +100,10 @@ test_arm:
 
 publish:
   stage: release
-  extends: .docker
+  extends: .docker_rpi
   only:
-    - master
+    refs:
+      - master
   script:
     - docker tag "$CI_PROJECT_PATH":"$TAG"  "$CI_PROJECT_PATH":latest
     - docker push "$CI_PROJECT_PATH":latest
@@ -110,7 +111,8 @@ publish:
 github:
   stage: release
   only:
-    - master
+    refs:
+      - master
   before_script:
     - export TAG=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
   script:
