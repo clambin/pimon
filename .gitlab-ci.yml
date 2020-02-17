@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - smoke
   - release
 
 .test_only:
@@ -17,17 +18,17 @@ stages:
       - "Dockerfile*"
       - .gitlab-ci.yml
 
-.docker_build:
-  # using 17.12: stable doesn't work on RPI (can't connect to docker socket)
-  image: docker:17.12
+.docker:
+  image: docker:stable
   services:
-    - docker:17.12-dind
+    - docker:stable-dind
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_CLI_EXPERIMENTAL: enabled
   except:
     - tags
-  extends: .build_only
+  tags:
+    - docker
   before_script:
     # TODO: wrap TAG logic in a script and call that when needed?
     - export VERSION=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
@@ -41,12 +42,17 @@ stages:
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
     - export CI_PROJECT_PATH=$(echo $CI_PROJECT_PATH | tr "[:upper:]" "[:lower:]")
 
-.docker_build_stable:
-  extends: .docker_build
-  # and since 'docker manifest' doesn't work on RPI on 17.12, we'll use stable for that
-  image: docker:stable
+.docker_rpi:
+  extends: .docker
+  # using 17.12: stable doesn't work on RPI (can't connect to docker socket)
+  # note: 'docker manifest' doesn't work on RPI on 17.12.  so we use stable for
+  # everything, except building for ARM.
+  image: docker:17.12
   services:
-    - docker:stable-dind
+    - docker:17.12-dind
+  tags:
+    - docker
+    - arm
 
 flake8:
   stage: test
@@ -73,10 +79,9 @@ pytest:
 
 build_arm:
   stage: build
-  extends: .docker_build
-  tags:
-    - docker
-    - arm
+  extends:
+    - .docker_rpi
+    - .build_only
   script:
     - docker build --pull
                    --cache-from "$CI_PROJECT_PATH":"$TAG"
@@ -84,13 +89,17 @@ build_arm:
                    -t "$CI_PROJECT_PATH":"$TAG" .
     - docker push "$CI_PROJECT_PATH":"$TAG"
 
-# smoke test goes here
+test_arm:
+  stage : smoke
+  extends:
+    - .docker
+    - .build_only
+  script:
+    - docker run "$CI_PROJECT_PATH":"$TAG" --once
 
 publish:
   stage: release
-  extends: .docker_build
-  tags:
-    - docker
+  extends: .docker
   only:
     - master
   script:
