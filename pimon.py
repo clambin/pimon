@@ -25,9 +25,6 @@ class GPIOProbe(Probe):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.OUT)
 
-#    def __str__(self):
-#        return f'GPIO pin {self.pin}'
-
     def measure(self):
         return GPIO.input(self.pin)
 
@@ -66,26 +63,26 @@ def print_config(config):
 
 
 def pimon(config):
-    probes = Probes()
     reporter = PrometheusReporter(config.port)
-    freq_probe = probes.register(FileProbe(config.freq_filename))
-    temp_probe = probes.register(FileProbe(config.temp_filename, 1000))
+    probes = Probes()
 
-    reporter.add(freq_probe, 'pimon_clockspeed', 'CPU clock speed')
-    reporter.add(temp_probe, 'pimon_temperature', 'CPU temperature')
+    reporter.add(probes.register(FileProbe(config.freq_filename)),
+                 'pimon_clockspeed', 'CPU clock speed')
+    reporter.add(probes.register(FileProbe(config.temp_filename, 1000)),
+                 'pimon_temperature', 'CPU temperature')
 
     if config.enable_monitor_fan:
         try:
             # Pimoroni fan shim uses pin 18 of the GPIO to control the fa
-            fan_probe = probes.register(GPIOProbe(18))
-            reporter.add(fan_probe, 'pimon_fan', 'RPI Fan Status')
+            reporter.add(probes.register(GPIOProbe(18)),
+                         'pimon_fan', 'RPI Fan Status')
         except RuntimeError:
             logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
 
     try:
         reporter.start()
     except OSError as err:
-        print(f"Could not start prometheus client on port {config.port}: {err}")
+        logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
         return 1
 
     while True:
