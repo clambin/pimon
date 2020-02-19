@@ -5,7 +5,8 @@ import time
 import argparse
 import logging
 
-from metrics import Metric, FileMetric, Reporter
+from metrics.probe import Probe, FileProbe, Probes
+from metrics.reporter import Reporters, PrometheusReporter, FileReporter
 
 import version
 
@@ -16,25 +17,23 @@ except ModuleNotFoundError:
     import GPIO
 
 
-class GPIOMetric(Metric):
-    def __init__(self, name, description, pin):
-        super().__init__(name, description)
+class GPIOProbe(Probe):
+    def __init__(self, pin):
+        super().__init__()
         self.pin = pin
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.OUT)
 
-    def __str__(self):
-        return f'GPIO pin {self.pin}'
-
     def measure(self):
         return GPIO.input(self.pin)
 
 
-def get_config():
+def get_configuration():
     default_interval = 5
     default_port = 8080
     default_sys = '/sys'
+    default_log = None
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='version', version=f'%(prog)s {version.version}')
@@ -42,6 +41,8 @@ def get_config():
                         help=f'Time between measurements (default: {default_interval} sec)')
     parser.add_argument('--port', type=int, default=default_port,
                         help=f'Prometheus port (default: {default_port})')
+    parser.add_argument('--logfile', action='store', default=default_log,
+                        help=f'metrics output logfile (default: {default_log})')
     parser.add_argument('--sys', default=default_sys,
                         help=f'Location of the /sys filesystem (default: {default_sys})')
     parser.add_argument('--enable-monitor-fan', action='store_true',
@@ -60,29 +61,40 @@ def get_config():
     return args
 
 
-def print_config(config):
+def print_configuration(config):
     return ', '.join([f'{key}={val}' for key, val in vars(config).items()])
 
 
 def pimon(config):
-    reporter = Reporter(config.port)
-    reporter.add(FileMetric('pimon_clockspeed', 'CPU clock speed', config.freq_filename))
-    reporter.add(FileMetric('pimon_temperature', 'CPU temperature', config.temp_filename, 1000))
-    try:
-        if config.enable_monitor_fan:
-            # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
-            reporter.add(GPIOMetric('pimon_fan', 'RPI Fan Status', 18))
-    except RuntimeError:
-        logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
+    reporters = Reporters()
+    probes = Probes()
+
+    reporters.register(PrometheusReporter(config.port))
+    if config.logfile:
+        reporters.register(FileReporter(config.logfile))
+
+    reporters.add(probes.register(FileProbe(config.freq_filename)),
+                  'pimon_clockspeed', 'CPU clock speed')
+    reporters.add(probes.register(FileProbe(config.temp_filename, 1000)),
+                  'pimon_temperature', 'CPU temperature')
+
+    if config.enable_monitor_fan:
+        try:
+            # Pimoroni fan shim uses pin 18 of the GPIO to control the fa
+            reporters.add(probes.register(GPIOProbe(18)),
+                          'pimon_fan', 'RPI Fan Status')
+        except RuntimeError:
+            logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
 
     try:
-        reporter.start()
+        reporters.start()
     except OSError as err:
-        print(f"Could not start prometheus client on port {config.port}: {err}")
+        logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
         return 1
 
     while True:
-        reporter.run()
+        probes.run()
+        reporters.run()
         if config.once:
             break
         time.sleep(config.interval)
@@ -90,10 +102,10 @@ def pimon(config):
 
 
 if __name__ == '__main__':
-    config = get_config()
+    configuration = get_configuration()
     logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
-                        level=logging.DEBUG if config.debug else logging.INFO)
+                        level=logging.DEBUG if configuration.debug else logging.INFO)
     logging.info(f'Starting pimon v{version.version}')
-    logging.info(f'Configuration: {print_config(config)}')
+    logging.info(f'Configuration: {print_configuration(configuration)}')
 
-    pimon(config)
+    pimon(configuration)
