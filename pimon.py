@@ -6,7 +6,7 @@ import argparse
 import logging
 
 from metrics.probe import Probe, FileProbe, Probes
-from metrics.reporter import PrometheusReporter
+from metrics.reporter import PrometheusReporter, Reporters
 
 import version
 
@@ -29,7 +29,7 @@ class GPIOProbe(Probe):
         return GPIO.input(self.pin)
 
 
-def get_config():
+def get_configuration():
     default_interval = 5
     default_port = 8080
     default_sys = '/sys'
@@ -58,36 +58,38 @@ def get_config():
     return args
 
 
-def print_config(config):
+def print_configuration(config):
     return ', '.join([f'{key}={val}' for key, val in vars(config).items()])
 
 
 def pimon(config):
-    reporter = PrometheusReporter(config.port)
+    reporters = Reporters()
     probes = Probes()
 
-    reporter.add(probes.register(FileProbe(config.freq_filename)),
-                 'pimon_clockspeed', 'CPU clock speed')
-    reporter.add(probes.register(FileProbe(config.temp_filename, 1000)),
-                 'pimon_temperature', 'CPU temperature')
+    reporters.register(PrometheusReporter(config.port))
+
+    reporters.add(probes.register(FileProbe(config.freq_filename)),
+                  'pimon_clockspeed', 'CPU clock speed')
+    reporters.add(probes.register(FileProbe(config.temp_filename, 1000)),
+                  'pimon_temperature', 'CPU temperature')
 
     if config.enable_monitor_fan:
         try:
             # Pimoroni fan shim uses pin 18 of the GPIO to control the fa
-            reporter.add(probes.register(GPIOProbe(18)),
-                         'pimon_fan', 'RPI Fan Status')
+            reporters.add(probes.register(GPIOProbe(18)),
+                          'pimon_fan', 'RPI Fan Status')
         except RuntimeError:
             logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
 
     try:
-        reporter.start()
+        reporters.start()
     except OSError as err:
         logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
         return 1
 
     while True:
         probes.run()
-        reporter.run()
+        reporters.run()
         if config.once:
             break
         time.sleep(config.interval)
@@ -95,10 +97,10 @@ def pimon(config):
 
 
 if __name__ == '__main__':
-    config = get_config()
+    configuration = get_configuration()
     logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
-                        level=logging.DEBUG if config.debug else logging.INFO)
+                        level=logging.DEBUG if configuration.debug else logging.INFO)
     logging.info(f'Starting pimon v{version.version}')
-    logging.info(f'Configuration: {print_config(config)}')
+    logging.info(f'Configuration: {print_configuration(configuration)}')
 
-    pimon(config)
+    pimon(configuration)

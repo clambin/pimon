@@ -6,6 +6,27 @@ import logging
 from prometheus_client import start_http_server, Gauge
 
 
+# Convenience call to make code a little simpler when dealing with multiple reporters
+class Reporters:
+    def __init__(self):
+        self.reporters = []
+
+    def register(self, reporter):
+        self.reporters.append(reporter)
+
+    def add(self, probe, name, description, label=None, key=None):
+        for reporter in self.reporters:
+            reporter.add(probe, name, description, label, key)
+
+    def start(self):
+        for reporter in self.reporters:
+            reporter.start()
+
+    def run(self):
+        for reporter in self.reporters:
+            reporter.run()
+
+
 class Reporter:
     def __init__(self):
         self.probes = {}
