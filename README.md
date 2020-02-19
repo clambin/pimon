@@ -37,13 +37,15 @@ The following command line arguments can be passed to pimon:
 
 ```
 usage: pimon.py [-h] [--version] [--interval INTERVAL] [--port PORT]
-                [--sys SYS] [--enable-monitor-fan] [--once] [--stub] [--debug]
+                [--logfile LOGFILE] [--sys SYS] [--enable-monitor-fan]
+                [--once] [--stub] [--debug]
 
 optional arguments:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
   --interval INTERVAL   Time between measurements (default: 5 sec)
   --port PORT           Prometheus port (default: 8080)
+  --logfile LOGFILE     metrics output logfile (default: none)
   --sys SYS             Location of the /sys filesystem (default: /sys)
   --enable-monitor-fan  Enables monitoring the fan status
   --once                Measure once and then terminate

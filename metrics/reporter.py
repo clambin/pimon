@@ -65,13 +65,13 @@ class Reporter:
 
 
 class PrometheusReporter(Reporter):
-    def __init__(self, portno=8080):
+    def __init__(self, port=8080):
         super().__init__()
-        self.portno = portno
+        self.port = port
         self.gauges = {}
 
     def start(self):
-        start_http_server(self.portno)
+        start_http_server(self.port)
 
     def find_gauge(self, name, label):
         keyname = f'{name}|{label}' if label else name

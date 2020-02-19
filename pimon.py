@@ -6,7 +6,7 @@ import argparse
 import logging
 
 from metrics.probe import Probe, FileProbe, Probes
-from metrics.reporter import PrometheusReporter, Reporters
+from metrics.reporter import Reporters, PrometheusReporter, FileReporter
 
 import version
 
@@ -33,6 +33,7 @@ def get_configuration():
     default_interval = 5
     default_port = 8080
     default_sys = '/sys'
+    default_log = None
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='version', version=f'%(prog)s {version.version}')
@@ -40,6 +41,8 @@ def get_configuration():
                         help=f'Time between measurements (default: {default_interval} sec)')
     parser.add_argument('--port', type=int, default=default_port,
                         help=f'Prometheus port (default: {default_port})')
+    parser.add_argument('--logfile', action='store', default=None,
+                        help=f'metrics output logfile (default: none)')
     parser.add_argument('--sys', default=default_sys,
                         help=f'Location of the /sys filesystem (default: {default_sys})')
     parser.add_argument('--enable-monitor-fan', action='store_true',
@@ -67,6 +70,8 @@ def pimon(config):
     probes = Probes()
 
     reporters.register(PrometheusReporter(config.port))
+    if config.logfile:
+        reporters.register(FileReporter(config.logfile))
 
     reporters.add(probes.register(FileProbe(config.freq_filename)),
                   'pimon_clockspeed', 'CPU clock speed')

@@ -6,6 +6,7 @@ from metrics.reporter import FileReporter
 
 class SimpleProbe(Probe):
     def __init__(self, test_sequence):
+        super().__init__()
         self.test_sequence = test_sequence
         self.index = 0
         self.value = None
@@ -43,19 +44,15 @@ def process_file(filename):
 
 
 def test_single():
-    reporter = FileReporter('reporter.log')
     test_data = [0, 1, 2, 3, 4]
+    reporter = FileReporter('reporter.log')
     probe = SimpleProbe(test_data)
     reporter.add(probe, 'test_single', '')
-
     reporter.start()
-
     for i in test_data:
         probe.measure()
         reporter.run()
-
-    output = process_file('reporter.log')
-    assert output == test_data
+    assert test_data == process_file('reporter.log')
     os.remove('reporter.log')
 
 
@@ -75,8 +72,7 @@ def test_multiple():
     for i in range(len(test_data[0])):
         probes.run()
         reporter.run()
-    output = process_file('reporter.log')
-    assert output == test_data
+    assert test_data == process_file('reporter.log')
     os.remove('reporter.log')
 
 
@@ -89,8 +85,7 @@ def test_single_labeled():
     for i in test_data:
         probe.measure()
         reporter.run()
-    output = process_file('reporter.log')
-    assert output == test_data
+    assert test_data == process_file('reporter.log')
     os.remove('reporter.log')
 
 
@@ -110,6 +105,5 @@ def test_multiple_labeled():
     for i in range(len(test_data[0])):
         probes.run()
         reporter.run()
-    output = process_file('reporter.log')
-    assert output == test_data
+    assert test_data == process_file('reporter.log')
     os.remove('reporter.log')
