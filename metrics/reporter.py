@@ -1,6 +1,7 @@
 # Copyright 2020 by Christophe Lambin
 # All rights reserved.
 
+import time
 import logging
 
 from prometheus_client import start_http_server, Gauge
@@ -97,3 +98,38 @@ class PrometheusReporter(Reporter):
             g = g.labels(key)
         g.set(val)
 
+
+class FileReporter(Reporter):
+    def __init__(self, filename):
+        super().__init__()
+        self.filename = filename
+        self.f = None
+
+    def header(self):
+        out = []
+        for probe in self.probes:
+            tag = self.probes[probe]
+            out.append(f'{tag["name"]}' if tag['label'] is None else f'{tag["name"]}-{tag["label"]}:{tag["key"]}')
+        logging.info(out)
+        return ','.join(out)
+
+    def start(self):
+        f = open(self.filename, 'w')
+        f.write(f'Timestamp,{self.header()}\n')
+        f.close()
+
+    def pre_run(self):
+        pass
+
+    def post_run(self):
+        pass
+
+    def run(self):
+        self.pre_run()
+        f = open(self.filename, 'a')
+        f.write(f'{time.asctime()}')
+        for probe in self.probes:
+            f.write(f',{probe.measured()}')
+        f.write('\n')
+        f.close()
+        self.post_run()

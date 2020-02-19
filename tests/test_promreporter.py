@@ -18,8 +18,8 @@ class SimpleProbe:
 
 
 class UnittestReporter(PrometheusReporter):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, port=8080):
+        super().__init__(port)
         self.last = {}
 
     def report(self, probe, val):
@@ -97,3 +97,16 @@ def test_duplicates():
         assert False
     except KeyError:
         pass
+
+
+def test_bad_port():
+    reporter = UnittestReporter(12)
+    try:
+        reporter.start()
+        assert False
+    except OSError as err:
+        pass
+    # TODO: what exceptions does start_http_server raise?
+    except Exception as err:
+        pass
+
