@@ -1,5 +1,5 @@
 import os
-from metrics.probe import Probe, FileProbe, ProcessProbe
+from metrics.probe import Probe, FileProbe, ProcessProbe, Probes
 
 
 class UnittestProbe(Probe):
@@ -29,7 +29,8 @@ def test_simple():
     testdata = [1, 2, 3, 4]
     probe = UnittestProbe(testdata)
     for val in testdata:
-        assert probe.measure() == val
+        probe.run()
+        assert probe.measured() == val
 
 
 def test_file():
@@ -39,7 +40,8 @@ def test_file():
     for val in range(1, 10):
         with open('testfile.txt', 'w') as f:
             f.write(f'{val}')
-        assert probe.measure() == val
+        probe.run()
+        assert probe.measured() == val
     os.remove('testfile.txt')
 
 
@@ -53,10 +55,11 @@ def test_bad_file():
 
 
 def test_process():
-    metric = UnittestProcessProbe('/bin/sh -c ./process_ut.sh')
+    probe = UnittestProcessProbe('/bin/sh -c ./process_ut.sh')
     out = 0
-    while metric.running():
-        out += metric.measure()
+    while probe.running():
+        probe.run()
+        out += probe.measured()
     assert out == 55
 
 
@@ -67,3 +70,20 @@ def test_bad_process():
     except FileNotFoundError:
         bad_file = True
     assert bad_file
+
+def test_probes():
+    test_data = [
+        [0, 1, 2, 3, 4],
+        [4, 3, 2, 1, 0],
+        [0, 1, 2, 3, 4],
+        [4, 3, 2, 1, 0]
+    ]
+    probes = Probes()
+    for test in test_data:
+        probes.register(UnittestProbe(test))
+    for i in range(len(test_data[0])):
+        probes.run()
+        results = probes.measured()
+        for j in range(len(results)):
+            target = i if j % 2 == 0 else 4 - i
+            assert results[j] == target

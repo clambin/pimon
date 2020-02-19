@@ -1,6 +1,8 @@
 # Copyright 2020 by Christophe Lambin
 # All rights reserved.
 
+import logging
+
 from prometheus_client import start_http_server, Gauge
 
 
@@ -34,7 +36,9 @@ class Reporter:
     def run(self):
         self.pre_run()
         for probe in self.probes:
-            self.report(probe, probe.measured())
+            val = probe.measured()
+            logging.debug(f'{self.probes[probe]["name"]}: {val}')
+            self.report(probe, val)
         self.post_run()
 
 

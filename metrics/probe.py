@@ -9,10 +9,36 @@ import threading
 
 class Probe:
     def __init__(self):
-        pass
+        self.val = None
 
     def measure(self):
         return None
+
+    def run(self):
+        self.val = self.measure()
+
+    def measured(self):
+        return self.val
+
+
+# Convenience class to make code a little simpler
+class Probes:
+    def __init__(self):
+        self.probes = []
+
+    def register(self, probe):
+        self.probes.append(probe)
+        return probe
+
+    def run(self):
+        for probe in self.probes:
+            probe.run()
+
+    def measured(self):
+        out = []
+        for probe in self.probes:
+            out.append(probe.measured())
+        return out
 
 
 class FileProbe(Probe):
@@ -56,7 +82,7 @@ class ProcessReader:
         return self.thread.is_alive() or not self.queue.empty()
 
 
-class ProcessProbe:
+class ProcessProbe(Probe):
     def __init__(self, cmd):
         self.cmd = cmd
         self.reader = ProcessReader(cmd)
