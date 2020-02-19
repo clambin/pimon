@@ -41,8 +41,8 @@ def get_configuration():
                         help=f'Time between measurements (default: {default_interval} sec)')
     parser.add_argument('--port', type=int, default=default_port,
                         help=f'Prometheus port (default: {default_port})')
-    parser.add_argument('--logfile', action='store', default=None,
-                        help=f'metrics output logfile (default: none)')
+    parser.add_argument('--logfile', action='store', default=default_log,
+                        help=f'metrics output logfile (default: {default_log})')
     parser.add_argument('--sys', default=default_sys,
                         help=f'Location of the /sys filesystem (default: {default_sys})')
     parser.add_argument('--enable-monitor-fan', action='store_true',
