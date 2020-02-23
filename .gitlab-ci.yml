@@ -81,6 +81,24 @@ pytest:
   script:
     - cd tests && pytest
 
+prometheus:
+  stage: test
+  extends: .test_only
+  image: python:3.7-alpine
+  before_script:
+    - python -m venv venv
+    - source venv/bin/activate
+    - pip install pipenv
+    - pipenv install
+    - apk add curl
+  script:
+    - python pimon.py --port 8080 --stub &
+    - PINGPID=$!
+    - sleep 2
+    - curl -s localhost:8080/metric | grep '^pimon_clockspeed '
+    - curl -s localhost:8080/metric | grep '^pimon_temperature '
+    - kill $PINGPID
+
 build_arm:
   stage: build
   extends:
