@@ -80,7 +80,7 @@ def pimon(config):
 
     if config.enable_monitor_fan:
         try:
-            # Pimoroni fan shim uses pin 18 of the GPIO to control the fa
+            # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
             reporters.add(probes.register(GPIOProbe(18)),
                           'pimon_fan', 'RPI Fan Status')
         except RuntimeError:

@@ -1,8 +1,8 @@
 # Copyright 2020 by Christophe Lambin
 # All rights reserved.
 
-import time
 import logging
+import time
 
 from prometheus_client import start_http_server, Gauge
 
@@ -59,7 +59,6 @@ class Reporter:
         self.pre_run()
         for probe in self.probes:
             val = probe.measured()
-            logging.debug(f'{self.probes[probe]["name"]}: {val}')
             self.report(probe, val)
         self.post_run()
 
@@ -92,18 +91,18 @@ class PrometheusReporter(Reporter):
         self.make_gauge(name, description, label)
 
     def report(self, probe, val):
-        name, label, key = self.get_probe_info(probe)
-        g = self.find_gauge(name, label)
-        if label is not None:
-            g = g.labels(key)
-        g.set(val)
+        if val is not None:
+            name, label, key = self.get_probe_info(probe)
+            g = self.find_gauge(name, label)
+            if label is not None:
+                g = g.labels(key)
+            g.set(val)
 
 
 class FileReporter(Reporter):
     def __init__(self, filename):
         super().__init__()
         self.filename = filename
-        self.f = None
 
     def header(self):
         out = []
@@ -114,9 +113,8 @@ class FileReporter(Reporter):
         return ','.join(out)
 
     def start(self):
-        f = open(self.filename, 'w')
-        f.write(f'Timestamp,{self.header()}\n')
-        f.close()
+        with open(self.filename, 'w') as f:
+            f.write(f'Timestamp,{self.header()}\n')
 
     def pre_run(self):
         pass
@@ -126,10 +124,9 @@ class FileReporter(Reporter):
 
     def run(self):
         self.pre_run()
-        f = open(self.filename, 'a')
-        f.write(f'{time.asctime()}')
-        for probe in self.probes:
-            f.write(f',{probe.measured()}')
-        f.write('\n')
-        f.close()
+        with open(self.filename, 'a') as f:
+            f.write(f'{time.strftime("%Y-%m-%dT%T")}')
+            for probe in self.probes:
+                f.write(f',{probe.measured()}')
+            f.write('\n')
         self.post_run()
