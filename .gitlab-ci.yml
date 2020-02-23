@@ -50,13 +50,12 @@ stages:
     - export CI_PROJECT_PATH=$(echo $CI_PROJECT_PATH | tr "[:upper:]" "[:lower:]")
 
 .docker_arm:
-  extends: .docker
   # using 17.12: stable doesn't work on RPI (can't connect to docker socket)
-  # note: 'docker manifest' doesn't work on RPI on 17.12.  so we use stable for
-  # everything, except building for ARM.
   image: docker:17.12
   services:
     - docker:17.12-dind
+  variables:
+    DOCKER_DRIVER: overlay2
   tags:
     - docker
     - arm
@@ -98,7 +97,7 @@ build_arm:
 test_arm:
   stage : smoke
   extends:
-    - .docker
+    - .docker_arm
     - .build_only
   script:
     - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$TAG" --once --stub --debug
