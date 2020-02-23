@@ -28,6 +28,10 @@ stages:
     - docker:stable-dind
   variables:
     DOCKER_DRIVER: overlay2
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_CERT_PATH: "/certs/client"
     DOCKER_CLI_EXPERIMENTAL: enabled
   tags:
     - docker
@@ -56,6 +60,7 @@ stages:
   tags:
     - docker
     - arm
+    - rpi
 
 flake8:
   stage: test
@@ -83,9 +88,10 @@ pytest:
 build_arm:
   stage: build
   extends:
-    - .docker_arm
+    - .docker
     - .build_only
   script:
+    - docker run --rm --privileged multiarch/qemu-user-static:register --reset
     - docker build --pull
                    --cache-from "$CI_PROJECT_PATH":"$TAG"
                    --build-arg BASE_IMAGE=arm32v7/python:3.7-alpine
