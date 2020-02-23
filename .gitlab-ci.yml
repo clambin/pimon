@@ -35,7 +35,6 @@ stages:
     DOCKER_CLI_EXPERIMENTAL: enabled
   tags:
     - docker
-    - shared
   before_script:
     # TODO: wrap TAG logic in a script and call that when needed?
     - export VERSION=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
@@ -50,6 +49,7 @@ stages:
     - export CI_PROJECT_PATH=$(echo $CI_PROJECT_PATH | tr "[:upper:]" "[:lower:]")
 
 .docker_arm:
+  extends: .docker
   # using 17.12: stable doesn't work on RPI (can't connect to docker socket)
   image: docker:17.12
   services:
