@@ -100,10 +100,6 @@ test_arm:
   extends:
     - .docker
     - .build_only
-  tags:
-    - docker
-    - arm
-    - rpi
   script:
     - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$TAG" --once --stub --debug
 
