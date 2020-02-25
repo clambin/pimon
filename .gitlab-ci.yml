@@ -76,10 +76,12 @@ pytest:
   before_script:
     - python -m venv venv
     - source venv/bin/activate
-    - pip install pipenv
+    - pip install pipenv pytest-cov
     - pipenv install
   script:
-    - cd tests && pytest
+    - cd tests && pytest --cov=../
+  after_script:
+    - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}"
 
 prometheus:
   stage: test
