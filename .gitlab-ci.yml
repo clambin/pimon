@@ -95,11 +95,11 @@ prometheus:
     - apk add curl
   script:
     - python pimon.py --port 8080 --stub &
-    - PIMONPID=$!
+    - PINGPID=$!
     - sleep 2
     - curl -s localhost:8080/metric | grep '^pimon_clockspeed '
     - curl -s localhost:8080/metric | grep '^pimon_temperature '
-    - kill $PIMONPID
+    - kill $PINGPID
 
 build_arm:
   stage: build
