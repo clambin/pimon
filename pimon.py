@@ -66,6 +66,11 @@ def print_configuration(config):
 
 
 def pimon(config):
+    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
+                        level=logging.DEBUG if config.debug else logging.INFO)
+    logging.info(f'Starting pimon v{version.version}')
+    logging.info(f'Configuration: {print_configuration(config)}')
+
     reporters = Reporters()
     probes = Probes()
 
@@ -102,10 +107,4 @@ def pimon(config):
 
 
 if __name__ == '__main__':
-    configuration = get_configuration()
-    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
-                        level=logging.DEBUG if configuration.debug else logging.INFO)
-    logging.info(f'Starting pimon v{version.version}')
-    logging.info(f'Configuration: {print_configuration(configuration)}')
-
-    pimon(configuration)
+    pimon(get_configuration())
