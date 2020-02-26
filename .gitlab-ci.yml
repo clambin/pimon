@@ -79,7 +79,6 @@ pytest:
     - pipenv install --dev
   script:
     - cd tests && pipenv run pytest --cov
-  after_script:
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
 
 prometheus:
