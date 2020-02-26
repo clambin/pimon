@@ -74,12 +74,12 @@ pytest:
   extends: .test_only
   image: python:3.7
   before_script:
-    - pip install pipenv
+    - pip install pipenv --dev
     - pipenv install
   script:
     - cd tests && pipenv run pytest
-  #after_script:
-  #  - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}"
+  after_script:
+    - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}"
 
 prometheus:
   stage: test
