@@ -78,7 +78,7 @@ pytest:
     - pip install pipenv
     - pipenv install --dev
   script:
-    - cd tests && pipenv run pytest
+    - cd tests && pipenv run pytest --cov
   after_script:
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
 

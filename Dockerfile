@@ -14,7 +14,7 @@ RUN apk update && \
     apk --no-cache --virtual .build-deps add gcc musl-dev && \
     pip install --upgrade pip && \
     pip install pipenv && \
-    pipenv install --dev --system --deploy --ignore-pipfile && \
+    pipenv install --system --deploy --ignore-pipfile && \
     pip install --no-cache-dir rpi.gpio && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/*
