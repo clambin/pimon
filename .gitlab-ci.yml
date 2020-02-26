@@ -80,7 +80,7 @@ pytest:
   script:
     - cd tests && pipenv run pytest
   after_script:
-    - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}"
+    - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
 
 prometheus:
   stage: test
