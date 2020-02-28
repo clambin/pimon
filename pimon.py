@@ -29,7 +29,7 @@ class GPIOProbe(Probe):
         return GPIO.input(self.pin)
 
 
-def get_configuration():
+def get_configuration(args=None):
     default_interval = 5
     default_port = 8080
     default_sys = '/sys'
@@ -53,7 +53,7 @@ def get_configuration():
                         help='Use stubs (for debugging only')
     parser.add_argument('--debug', action='store_true',
                         help='Set logging level to debug')
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     setattr(args, 'temp_filename',
             'tests/temp' if args.stub else f'{args.sys}/devices/virtual/thermal/thermal_zone0/temp')
     setattr(args, 'freq_filename',
