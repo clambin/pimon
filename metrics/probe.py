@@ -5,14 +5,16 @@ import queue
 import shlex
 import subprocess
 import threading
+from abc import ABC, abstractmethod
 
 
-class Probe:
+class Probe(ABC):
     def __init__(self):
         self.val = None
 
+    @abstractmethod
     def measure(self):
-        return None
+        """Implement measurement logic in the inherited class"""
 
     def run(self):
         self.val = self.measure()
@@ -82,17 +84,18 @@ class ProcessReader:
         return self.thread.is_alive() or not self.queue.empty()
 
 
-class ProcessProbe(Probe):
+class ProcessProbe(Probe, ABC):
     def __init__(self, cmd):
         super().__init__()
         self.cmd = cmd
         self.reader = ProcessReader(cmd)
 
+    @abstractmethod
+    def process(self, lines):
+        """Implement measurement logic in the inherited class"""
+
     def running(self):
         return self.reader.running()
-
-    def process(self, lines):
-        return None
 
     def measure(self):
         val = None

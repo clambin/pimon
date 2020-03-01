@@ -1,21 +1,6 @@
-import logging
-
 from metrics.probe import Probe, Probes
 from metrics.reporter import Reporter, Reporters
-
-
-class SimpleProbe(Probe):
-    def __init__(self, test_sequence):
-        super().__init__()
-        self.test_sequence = test_sequence
-        self.index = 0
-
-    def measure(self):
-        val = self.test_sequence[self.index]
-        self.index += 1
-        if self.index >= len(self.test_sequence):
-            self.index = 0
-        return val
+from tests.probes import SimpleProbe
 
 
 class UnittestReporter(Reporter):
@@ -88,15 +73,16 @@ def test_multiple_labeled():
 
 def test_duplicates():
     reporter = UnittestReporter()
+    raised = False
+    calls = 0
     try:
+        calls = 1
+        reporter.add(SimpleProbe([0]), 'test', '', 'source', 'dest')
+        calls = 2
         reporter.add(SimpleProbe([0]), 'test', '', 'source', 'dest')
     except KeyError:
-        assert False
-    try:
-        reporter.add(SimpleProbe([0]), 'test', '', 'source', 'dest')
-        assert False
-    except KeyError:
-        pass
+        raised = True
+    assert raised and calls == 2
 
 
 def test_reporters():
@@ -114,6 +100,7 @@ def test_reporters():
     assert p1 == p2
 
     # doesn't really test reporters.run() but checks if we haven't broken the API again
+    reporters.start()
     for i in range(6):
         probes.run()
         reporters.run()

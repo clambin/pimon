@@ -1,24 +1,8 @@
 import os
 
 from metrics.probe import Probe, Probes
-from metrics.reporter import FileReporter
-
-
-class SimpleProbe(Probe):
-    def __init__(self, test_sequence):
-        super().__init__()
-        self.test_sequence = test_sequence
-        self.index = 0
-        self.value = None
-
-    def measure(self):
-        self.value = self.test_sequence[self.index]
-        self.index += 1
-        if self.index >= len(self.test_sequence):
-            self.index = 0
-
-    def measured(self):
-        return self.value
+from metrics.reporter import FileReporter, Reporters
+from tests.probes import SimpleProbe
 
 
 def process_file(filename):
@@ -45,13 +29,14 @@ def process_file(filename):
 
 def test_single():
     test_data = [0, 1, 2, 3, 4]
-    reporter = FileReporter('reporter.log')
-    probe = SimpleProbe(test_data)
-    reporter.add(probe, 'test_single', '')
-    reporter.start()
+    reporters = Reporters()
+    probes = Probes()
+    reporters.register(FileReporter('reporter.log'))
+    reporters.add(probes.register(SimpleProbe(test_data)), 'test_single', '')
+    reporters.start()
     for i in test_data:
-        probe.measure()
-        reporter.run()
+        probes.run()
+        reporters.run()
     assert test_data == process_file('reporter.log')
     os.remove('reporter.log')
 
