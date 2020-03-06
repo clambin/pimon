@@ -83,7 +83,7 @@ def pimon(config):
     reporters.add(probes.register(FileProbe(config.temp_filename, 1000)),
                   'pimon_temperature', 'CPU temperature')
 
-    if config.disable_monitor_fan:
+    if not config.disable_monitor_fan:
         try:
             # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
             reporters.add(probes.register(GPIOProbe(18)),
