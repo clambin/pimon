@@ -5,7 +5,7 @@ from pimon import pimon, get_configuration
 
 
 def test_pimon():
-    config = argparse.Namespace(interval=5, port=8080, sys='/host/sys', once=True, enable_monitor_fan=True,
+    config = argparse.Namespace(interval=5, port=8080, sys='/host/sys', once=True, disable_monitor_fan=True,
                                 logfile='logfile.txt', stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp')
     assert pimon(config) == 0
@@ -32,4 +32,4 @@ def test_default_config():
     assert config.debug is False
     assert config.stub is False
     assert config.sys == '/sys'
-    assert config.enable_monitor_fan is False
+    assert config.disable_monitor_fan is False

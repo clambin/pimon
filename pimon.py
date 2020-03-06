@@ -45,8 +45,8 @@ def get_configuration(args=None):
                         help=f'metrics output logfile (default: {default_log})')
     parser.add_argument('--sys', default=default_sys,
                         help=f'Location of the /sys filesystem (default: {default_sys})')
-    parser.add_argument('--enable-monitor-fan', action='store_true',
-                        help='Enables monitoring the fan status')
+    parser.add_argument('--disable-monitor-fan', action='store_true',
+                        help='Disables monitoring the fan status')
     parser.add_argument('--once', action='store_true',
                         help='Measure once and then terminate')
     parser.add_argument('--stub', action='store_true',
@@ -83,7 +83,7 @@ def pimon(config):
     reporters.add(probes.register(FileProbe(config.temp_filename, 1000)),
                   'pimon_temperature', 'CPU temperature')
 
-    if config.enable_monitor_fan:
+    if config.disable_monitor_fan:
         try:
             # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
             reporters.add(probes.register(GPIOProbe(18)),
