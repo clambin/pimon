@@ -169,10 +169,10 @@ def get_configuration(args=None):
     parser.add_argument('--debug', action='store_true',
                         help='Set logging level to debug')
     args = parser.parse_args(args)
-    setattr(args, 'temp_filename',
-            'tests/temp' if args.stub else f'{args.monitor_cpu_sysfs}/devices/virtual/thermal/thermal_zone0/temp')
-    setattr(args, 'freq_filename',
-            'tests/freq' if args.stub else f'{args.monitor_cpu_sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
+    setattr(args, 'temp_filename', 'tests/temp' if args.stub else
+            f'{args.monitor_cpu_sysfs}/devices/virtual/thermal/thermal_zone0/temp')
+    setattr(args, 'freq_filename', 'tests/freq' if args.stub else
+            f'{args.monitor_cpu_sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
     return args
 
 
