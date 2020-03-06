@@ -14,7 +14,7 @@ services:
   pimon:
     image: clambin/pimon:latest
     container_name: pimon
-    command: --sys /host/sys --enable-monitor-fan
+    command: --sys /host/sys
     volumes:
       - /sys:/host/sys:ro
     ports:
