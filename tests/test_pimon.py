@@ -7,8 +7,8 @@ from pimon import pimon, get_configuration
 def test_pimon():
     config = argparse.Namespace(interval=5, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
-                                monitor_fan=False,
-                                monitor_vpn=False,
+                                monitor_fan=True,
+                                monitor_vpn=True, monitor_vpn_client_status='client.status',
                                 reporter_prometheus=True,
                                 reporter_logfile=True,
                                 once=True, logfile='logfile.txt', stub=True, debug=True,
