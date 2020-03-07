@@ -1,13 +1,9 @@
-from pimon import OpenVPNClientStatusProbe
-from metrics.probe import Probes
+from pimon import OpenVPNProbe
 
 
-def test_openvpn():
-    probes = Probes()
-    probe = probes.register(OpenVPNClientStatusProbe('client.status'))
-    for name in probe.probes:
-        probes.register(probe.probes[name]['probe'])
-    probes.run()
+def test_vpn():
+    probe = OpenVPNProbe('client.status')
+    probe.run()
     assert probe.get_probe('client_tun_tap_read').measured() == 1
     assert probe.get_probe('client_tun_tap_write').measured() == 2
     assert probe.get_probe('client_tcp_udp_read').measured() == 3
