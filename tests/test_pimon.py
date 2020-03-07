@@ -1,20 +1,19 @@
 import argparse
 import os
+import pytest
 
-from pimon import pimon, get_configuration
+from pimon import pimon, get_configuration, str2bool
 
 
-def test_pimon():
-    config = argparse.Namespace(interval=5, port=8080,
-                                monitor_cpu=True, monitor_cpu_sysfs='.',
-                                monitor_fan=True,
-                                monitor_vpn=True, monitor_vpn_client_status='client.status',
-                                reporter_prometheus=True,
-                                reporter_logfile=True,
-                                once=True, logfile='logfile.txt', stub=True, debug=True,
-                                freq_filename='freq', temp_filename='temp')
-    assert pimon(config) == 0
-    os.remove('logfile.txt')
+def test_str2bool():
+    assert str2bool(True) is True
+    for arg in ['yes', 'true', 't', 'y', '1', 'on']:
+        assert str2bool(arg) is True
+    for arg in ['no', 'false', 'f', 'n', '0', 'off']:
+        assert str2bool(arg) is False
+    with pytest.raises(argparse.ArgumentTypeError) as e:
+        assert str2bool('maybe')
+    assert str(e.value) == 'Boolean value expected.'
 
 
 def test_get_config():
@@ -47,3 +46,30 @@ def test_default_config():
     assert config.monitor_cpu_sysfs == '/sys'
     assert config.monitor_fan is True
     assert config.temp_filename == '/sys/devices/virtual/thermal/thermal_zone0/temp'
+
+
+def test_pimon():
+    config = argparse.Namespace(interval=5, port=8080,
+                                monitor_cpu=True, monitor_cpu_sysfs='.',
+                                monitor_fan=True,
+                                monitor_vpn=True, monitor_vpn_client_status='client.status',
+                                reporter_prometheus=True,
+                                reporter_logfile=True, logfile='logfile.txt',
+                                once=True, stub=True, debug=True,
+                                freq_filename='freq', temp_filename='temp')
+    assert pimon(config) == 0
+    os.remove('logfile.txt')
+
+
+def test_no_reporters():
+    config = argparse.Namespace(interval=5,
+                                monitor_cpu=True, monitor_cpu_sysfs='.',
+                                monitor_fan=True,
+                                monitor_vpn=True, monitor_vpn_client_status='client.status',
+                                reporter_prometheus=False,
+                                reporter_logfile=False,
+                                once=True, stub=True, debug=True,
+                                freq_filename='freq', temp_filename='temp')
+    assert pimon(config) == 0
+
+
