@@ -29,19 +29,6 @@ class GPIOProbe(Probe):
         return GPIO.input(self.pin)
 
 
-class SubProbe(Probe):
-    def __init__(self, name, parent):
-        super().__init__()
-        self.name = name
-        self.parent = parent
-
-    def measure(self):
-        try:
-            return self.parent.probes[self.name]['value']
-        except KeyError:
-            return None
-
-
 class OpenVPNProbe(FileProbe, ProbeAggregator):
     def __init__(self, filename):
         self.regex = {
@@ -67,80 +54,6 @@ class OpenVPNProbe(FileProbe, ProbeAggregator):
                 self.set_value(name, val)
 
 
-class OpenVPNClientStatusProbe(FileProbe):
-    def __init__(self, filename):
-        super().__init__(filename)
-        self.probes = {
-             'client_auth_read': {
-                 'regex': r'Auth read bytes,(\d+)',
-                 'probe': SubProbe('client_auth_read', self),
-                 'value': None
-             },
-             'client_pre_compress': {
-                 'regex': r'pre-compress bytes,(\d+)',
-                 'probe': SubProbe('client_pre_compress', self),
-                 'value': None
-             },
-             'client_pre_decompress': {
-                 'regex': r'pre-decompress bytes,(\d+)',
-                 'probe': SubProbe('client_pre_decompress', self),
-                 'value': None
-             },
-             'client_post_decompress': {
-                 'regex': r'post-decompress bytes,(\d+)',
-                 'probe': SubProbe('client_post_decompress', self),
-                 'value': None
-             },
-             'client_post_compress': {
-                 'regex': r'post-compress bytes,(\d+)',
-                 'probe': SubProbe('client_post_compress', self),
-                 'value': None
-             },
-             'client_tcp_udp_read': {
-                 'regex': r'TCP/UDP read bytes,(\d+)',
-                 'probe': SubProbe('client_tcp_udp_read', self),
-                 'value': None
-             },
-             'client_tcp_udp_write': {
-                 'regex': r'TCP/UDP write bytes,(\d+)',
-                 'probe': SubProbe('client_tcp_udp_write', self),
-                 'value': None
-             },
-             'client_tun_tap_read': {
-                 'regex': r'TUN/TAP read bytes,(\d+)',
-                 'probe': SubProbe('client_tun_tap_read', self),
-                 'value': None
-             },
-             'client_tun_tap_write': {
-                 'regex': r'TUN/TAP write bytes,(\d+)',
-                 'probe': SubProbe('client_tun_tap_write', self),
-                 'value': None
-             },
-        }
-
-    def get_probe(self, name):
-        try:
-            return self.probes[name]['probe']
-        except KeyError as err:
-            logging.warning(err)
-            return None
-
-    def set_probe_value(self, name, value):
-        try:
-            self.probes[name]['value'] = value
-        except KeyError as err:
-            logging.warning(err)
-
-    def process(self, content):
-        for name in self.probes:
-            regex = self.probes[name]['regex']
-            result = re.search(regex, content)
-            if result:
-                val = int(result.group(1))
-                logging.debug(f'{name}: {val}')
-                self.set_probe_value(name, val)
-
-
 def str2bool(v):
     if isinstance(v, bool):
         return v
@@ -156,40 +69,42 @@ def get_configuration(args=None):
     default_interval = 5
     default_port = 8080
     default_sys = '/sys'
-    default_log = None
+    default_log = 'logfile.csv'
     default_vpn_client_status = 'client.status'
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='version', version=f'%(prog)s {version.version}')
     parser.add_argument('--interval', type=int, default=default_interval,
                         help=f'Time between measurements (default: {default_interval} sec)')
-    parser.add_argument('--port', type=int, default=default_port,
-                        help=f'Prometheus port (default: {default_port})')
-    parser.add_argument('--logfile', action='store', default=default_log,
-                        help=f'metrics output logfile (default: {default_log})')
-
-    # CPU monitoring
-    parser.add_argument('--monitor-cpu', type=str2bool, nargs='?', default=True,
-                        help='Enable/Disable monitoring the CPU status')
-    parser.add_argument('--monitor-cpu-sysfs', default=default_sys,
-                        help=f'Location of the /sys filesystem (default: {default_sys})')
-
-    # Fan status monitoring
-    parser.add_argument('--monitor-fan', type=str2bool, nargs='?', default=True,
-                        help='Enable/Disable monitoring the fan status')
-
-    # OpenVPN monitoring
-    parser.add_argument('--monitor-openvpn', type=str2bool, nargs='?', default=False,
-                        help='Enable/disable OpenVPN client metrics')
-    parser.add_argument('--monitor-openvpn-client_status', default=default_vpn_client_status,
-                        help=f'openvpn client status file')
-
     parser.add_argument('--once', action='store_true',
                         help='Measure once and then terminate')
     parser.add_argument('--stub', action='store_true',
                         help='Use stubs (for debugging only')
     parser.add_argument('--debug', action='store_true',
                         help='Set logging level to debug')
+    # Reporters
+    parser.add_argument('--reporter-prometheus', type=str2bool, nargs='?', default=True,
+                        help='Report metrics to Prometheus')
+    parser.add_argument('--port', type=int, default=default_port,
+                        help=f'Prometheus port (default: {default_port})')
+    parser.add_argument('--reporter-logfile', type=str2bool, nargs='?', default=False,
+                        help='Report metrics to a CSV logfile')
+    parser.add_argument('--logfile', action='store', default=default_log,
+                        help=f'metrics output logfile (default: {default_log})')
+    # CPU monitoring
+    parser.add_argument('--monitor-cpu', type=str2bool, nargs='?', default=True,
+                        help='Enable/Disable monitoring the CPU status')
+    parser.add_argument('--monitor-cpu-sysfs', default=default_sys,
+                        help=f'Location of the /sys filesystem (default: {default_sys})')
+    # Fan status monitoring
+    parser.add_argument('--monitor-fan', type=str2bool, nargs='?', default=True,
+                        help='Enable/Disable monitoring the fan status')
+    # OpenVPN monitoring
+    parser.add_argument('--monitor-vpn', type=str2bool, nargs='?', default=False,
+                        help='Enable/disable OpenVPN client metrics')
+    parser.add_argument('--monitor-vpn-client-status', default=default_vpn_client_status,
+                        help=f'OpenVPN client status file')
+
     args = parser.parse_args(args)
     setattr(args, 'temp_filename', 'tests/temp' if args.stub else
             f'{args.monitor_cpu_sysfs}/devices/virtual/thermal/thermal_zone0/temp')
@@ -211,26 +126,24 @@ def pimon(config):
     reporters = Reporters()
     probes = Probes()
 
-    reporters.register(PrometheusReporter(config.port))
-    if config.logfile:
+    if config.reporter_prometheus:
+        reporters.register(PrometheusReporter(config.port))
+    if config.reporter_logfile:
         reporters.register(FileReporter(config.logfile))
+    if not config.reporter_prometheus and not config.reporter_logfile:
+        logging.warning('No reporters configured')
 
     if config.monitor_cpu:
         reporters.add(probes.register(FileProbe(config.freq_filename)), 'pimon_clockspeed', 'CPU clock speed')
         reporters.add(probes.register(FileProbe(config.temp_filename, 1000)), 'pimon_temperature', 'CPU temperature')
-
     if config.monitor_fan:
         try:
             # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
-            reporters.add(probes.register(GPIOProbe(18)),
-                          'pimon_fan', 'RPI Fan Status')
+            reporters.add(probes.register(GPIOProbe(18)), 'pimon_fan', 'RPI Fan Status')
         except RuntimeError:
             logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
-
-    if config.monitor_openvpn:
-        probe = probes.register(OpenVPNProbe(config.monitor_openvpn_client_status))
-        for name in probe.probes.keys():
-            probes.register(probe.probes[name])
+    if config.monitor_vpn:
+        probe = probes.register(OpenVPNProbe(config.monitor_vpn_client_status))
         reporters.add(probe.get_probe('client_auth_read'), 'openvpn_client_auth_read_bytes_total', '')
         reporters.add(probe.get_probe('client_pre_compress'), 'openvpn_client_pre_compress_bytes_total', '')
         reporters.add(probe.get_probe('client_pre_decompress'), 'openvpn_client_pre_decompress_bytes_total', '')

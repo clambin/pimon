@@ -37,10 +37,7 @@ class Probes:
             probe.run()
 
     def measured(self):
-        out = []
-        for probe in self.probes:
-            out.append(probe.measured())
-        return out
+        return [probe.measured() for probe in self.probes]
 
 
 class FileProbe(Probe):
@@ -122,30 +119,20 @@ class SubProbe(Probe):
 
 
 class ProbeAggregator(ABC):
-    def __init__(self, subprobes):
-        self.probes = {}
-        self.values = {}
-        for name in subprobes:
-            self.probes[name] = SubProbe(name, self)
-            self.values[name] = None
+    def __init__(self, names):
+        self.probes = {name: SubProbe(name, self) for name in names}
 
     def get_probe(self, name):
-        try:
-            return self.probes[name]
-        except KeyError:
-            return None
+        return self.probes[name]
 
     def get_value(self, name):
-        try:
-            return self.values[name]
-        except KeyError:
-            return None
+        return self.probes[name].val
 
     def set_value(self, name, value):
-        try:
-            self.values[name] = value
-        except KeyError:
-            pass
+        self.probes[name].val = value
+
+    def get_values(self):
+        return [self.get_value(probe) for probe in self.probes]
 
     @abstractmethod
     def measure(self):

@@ -103,9 +103,6 @@ class Aggregator(ProbeAggregator):
         for probe in self.probes:
             self.set_value(probe, self.generators[probe].next())
 
-    def get_values(self):
-        return [self.get_value(probe) for probe in self.probes]
-
 
 def test_aggregator():
     test_data = [
@@ -119,7 +116,6 @@ def test_aggregator():
         probe.run()
         expected = [test_data[n][i] for n in range(len(test_data))]
         assert probe.get_values() == expected
-
 
 
 
