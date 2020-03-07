@@ -17,6 +17,7 @@ def setmode(mode):
 
 
 def setup(pin, mode):
+    if pin == -1: raise RuntimeError
     pass
 
 

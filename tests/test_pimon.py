@@ -36,6 +36,7 @@ def test_default_config():
     assert config.monitor_cpu is True
     assert config.monitor_cpu_sysfs == '/sys'
     assert config.monitor_fan is True
+    assert config.monitor_fan_pin == 18
     assert config.monitor_vpn is False
     assert config.monitor_vpn_client_status == 'client.status'
     assert config.once is False
@@ -49,22 +50,33 @@ def test_default_config():
 
 
 def test_pimon():
-    config = argparse.Namespace(interval=5, port=8080,
+    config = argparse.Namespace(interval=5, port=-1,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
-                                monitor_fan=True,
+                                monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
                                 reporter_prometheus=True,
                                 reporter_logfile=True, logfile='logfile.txt',
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp')
+    assert pimon(config) == 1
+
+
+def test_no_gpio():
+    config = argparse.Namespace(interval=5, port=8080,
+                                monitor_cpu=True, monitor_cpu_sysfs='.',
+                                monitor_fan=True, monitor_fan_pin=-1,
+                                monitor_vpn=True, monitor_vpn_client_status='client.status',
+                                reporter_prometheus=False,
+                                reporter_logfile=False, logfile='logfile.txt',
+                                once=True, stub=True, debug=True,
+                                freq_filename='freq', temp_filename='temp')
     assert pimon(config) == 0
-    os.remove('logfile.txt')
 
 
 def test_no_reporters():
     config = argparse.Namespace(interval=5,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
-                                monitor_fan=True,
+                                monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
                                 reporter_prometheus=False,
                                 reporter_logfile=False,

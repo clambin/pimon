@@ -110,6 +110,10 @@ def get_configuration(args=None):
             f'{args.monitor_cpu_sysfs}/devices/virtual/thermal/thermal_zone0/temp')
     setattr(args, 'freq_filename', 'tests/freq' if args.stub else
             f'{args.monitor_cpu_sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
+
+    # No need to make this an argument (yet), but we'll already put it in configuration
+    # We'll use this in test_pimon to trigger an exception when accessing the GPIO
+    setattr(args, 'monitor_fan_pin', 18)
     return args
 
 
@@ -139,7 +143,7 @@ def pimon(config):
     if config.monitor_fan:
         try:
             # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
-            reporters.add(probes.register(GPIOProbe(18)), 'pimon_fan', 'RPI Fan Status')
+            reporters.add(probes.register(GPIOProbe(config.monitor_fan_pin)), 'pimon_fan', 'RPI Fan Status')
         except RuntimeError:
             logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
     if config.monitor_vpn:
@@ -156,7 +160,7 @@ def pimon(config):
 
     try:
         reporters.start()
-    except OSError as err:
+    except Exception as err:
         logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
         return 1
 
