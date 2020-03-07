@@ -1,15 +1,14 @@
 # Copyright 2020 by Christophe Lambin
 # All rights reserved.
 
-import time
 import argparse
-import re
 import logging
-
-from metrics.probe import Probe, FileProbe, Probes
-from metrics.reporter import Reporters, PrometheusReporter, FileReporter
+import re
+import time
 
 import version
+from metrics.probe import Probe, FileProbe, Probes, ProbeAggregator
+from metrics.reporter import Reporters, PrometheusReporter, FileReporter
 
 try:
     import RPi.GPIO as GPIO
@@ -41,6 +40,31 @@ class SubProbe(Probe):
             return self.parent.probes[self.name]['value']
         except KeyError:
             return None
+
+
+class OpenVPNProbe(FileProbe, ProbeAggregator):
+    def __init__(self, filename):
+        self.regex = {
+            'client_auth_read':       r'Auth read bytes,(\d+)',
+            'client_pre_compress':    r'pre-compress bytes,(\d+)',
+            'client_pre_decompress':  r'pre-decompress bytes,(\d+)',
+            'client_post_decompress': r'post-decompress bytes,(\d+)',
+            'client_post_compress':   r'post-compress bytes,(\d+)',
+            'client_tcp_udp_read':    r'TCP/UDP read bytes,(\d+)',
+            'client_tcp_udp_write':   r'TCP/UDP write bytes,(\d+)',
+            'client_tun_tap_read':    r'TUN/TAP read bytes,(\d+)',
+            'client_tun_tap_write':   r'TUN/TAP write bytes,(\d+)'
+        }
+        FileProbe.__init__(self, filename)
+        ProbeAggregator.__init__(self, list(self.regex.keys()))
+
+    def process(self, content):
+        for name in self.regex:
+            result = re.search(self.regex[name], content)
+            if result:
+                val = int(result.group(1))
+                logging.debug(f'{name}: {val}')
+                self.set_value(name, val)
 
 
 class OpenVPNClientStatusProbe(FileProbe):
@@ -107,24 +131,22 @@ class OpenVPNClientStatusProbe(FileProbe):
         except KeyError as err:
             logging.warning(err)
 
-    def measure(self):
-        with open(self.filename) as f:
-            content = '\n'.join(f.readlines())
-            for name in self.probes.keys():
-                regex = self.probes[name]['regex']
-                result = re.search(regex, content)
-                if result:
-                    val = int(result.group(1))
-                    logging.debug(f'{name}: {val}')
-                    self.set_probe_value(name, val)
+    def process(self, content):
+        for name in self.probes:
+            regex = self.probes[name]['regex']
+            result = re.search(regex, content)
+            if result:
+                val = int(result.group(1))
+                logging.debug(f'{name}: {val}')
+                self.set_probe_value(name, val)
 
 
 def str2bool(v):
     if isinstance(v, bool):
         return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+    if v.lower() in ('yes', 'true', 't', 'y', '1', 'on'):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ('no', 'false', 'f', 'n', '0', 'off'):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
@@ -206,19 +228,18 @@ def pimon(config):
             logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
 
     if config.monitor_openvpn:
-        probe = probes.register(OpenVPNClientStatusProbe(config.monitor_openvpn_client_status))
+        probe = probes.register(OpenVPNProbe(config.monitor_openvpn_client_status))
         for name in probe.probes.keys():
-            probes.register(probe.probes[name]['probe'])
-
-        reporters.add(probe.get_probe('client_auth_read'),        'openvpn_client_auth_read_bytes_total', '')
-        reporters.add(probe.get_probe('client_pre_compress'),     'openvpn_client_pre_compress_bytes_total', '')
-        reporters.add(probe.get_probe('client_pre_decompress'),   'openvpn_client_pre_decompress_bytes_total', '')
-        reporters.add(probe.get_probe('client_post_compress'),    'openvpn_client_post_compress_bytes_total', '')
-        reporters.add(probe.get_probe('client_post_decompress'),  'openvpn_client_post_decompress_bytes_total', '')
-        reporters.add(probe.get_probe('client_tcp_udp_read'),     'openvpn_client_tcp_udp_read_bytes_total', '')
-        reporters.add(probe.get_probe('client_tcp_udp_write'),    'openvpn_client_tcp_udp_write_bytes_total', '')
-        reporters.add(probe.get_probe('client_tun_tap_read'),     'openvpn_client_tun_tap_read_bytes_total', '')
-        reporters.add(probe.get_probe('client_tun_tap_write'),    'openvpn_client_tun_tap_write_bytes_total', '')
+            probes.register(probe.probes[name])
+        reporters.add(probe.get_probe('client_auth_read'), 'openvpn_client_auth_read_bytes_total', '')
+        reporters.add(probe.get_probe('client_pre_compress'), 'openvpn_client_pre_compress_bytes_total', '')
+        reporters.add(probe.get_probe('client_pre_decompress'), 'openvpn_client_pre_decompress_bytes_total', '')
+        reporters.add(probe.get_probe('client_post_compress'), 'openvpn_client_post_compress_bytes_total', '')
+        reporters.add(probe.get_probe('client_post_decompress'), 'openvpn_client_post_decompress_bytes_total', '')
+        reporters.add(probe.get_probe('client_tcp_udp_read'), 'openvpn_client_tcp_udp_read_bytes_total', '')
+        reporters.add(probe.get_probe('client_tcp_udp_write'), 'openvpn_client_tcp_udp_write_bytes_total', '')
+        reporters.add(probe.get_probe('client_tun_tap_read'), 'openvpn_client_tun_tap_read_bytes_total', '')
+        reporters.add(probe.get_probe('client_tun_tap_write'), 'openvpn_client_tun_tap_write_bytes_total', '')
 
     try:
         reporters.start()

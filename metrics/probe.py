@@ -16,11 +16,11 @@ class Probe(ABC):
     def measure(self):
         """Implement measurement logic in the inherited class"""
 
-    def run(self):
-        self.val = self.measure()
-
     def measured(self):
         return self.val
+
+    def run(self):
+        self.val = self.measure()
 
 
 # Convenience class to make code a little simpler
@@ -51,9 +51,13 @@ class FileProbe(Probe):
         f = open(self.filename)
         f.close()
 
+    def process(self, content):
+        return float(content) / self.divider
+
     def measure(self):
         with open(self.filename) as f:
-            return float(f.readline())/self.divider
+            content = ''.join(f.readlines())
+            return self.process(content)
 
 
 class ProcessReader:
@@ -105,3 +109,47 @@ class ProcessProbe(Probe, ABC):
             for line in self.reader.read(): lines.append(line)
             val = self.process(lines)
         return val
+
+
+class SubProbe(Probe):
+    def __init__(self, name, parent):
+        super().__init__()
+        self.name = name
+        self.parent = parent
+
+    def measure(self):
+        return self.parent.get_value(self.name)
+
+
+class ProbeAggregator(ABC):
+    def __init__(self, subprobes):
+        self.probes = {}
+        self.values = {}
+        for name in subprobes:
+            self.probes[name] = SubProbe(name, self)
+            self.values[name] = None
+
+    def get_probe(self, name):
+        try:
+            return self.probes[name]
+        except KeyError:
+            return None
+
+    def get_value(self, name):
+        try:
+            return self.values[name]
+        except KeyError:
+            return None
+
+    def set_value(self, name, value):
+        try:
+            self.values[name] = value
+        except KeyError:
+            pass
+
+    @abstractmethod
+    def measure(self):
+        """Implement measurement logic in the inherited class"""
+
+    def run(self):
+        self.measure()
