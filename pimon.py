@@ -50,7 +50,6 @@ class OpenVPNProbe(FileProbe, ProbeAggregator):
             result = re.search(self.regex[name], content)
             if result:
                 val = int(result.group(1))
-                logging.debug(f'{name}: {val}')
                 self.set_value(name, val)
 
 
