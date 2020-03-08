@@ -76,8 +76,6 @@ def test_pimon():
                                 reporter_logfile=True, logfile='logfile.txt',
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp')
-    probes, reporters = setup(config)
-    assert len(probes) == 1
     assert pimon(config) == 0
     os.remove('logfile.txt')
 
