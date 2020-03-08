@@ -137,6 +137,12 @@ def pimon(config):
     if not config.reporter_prometheus and not config.reporter_logfile:
         logging.warning('No reporters configured')
 
+    try:
+        reporters.start()
+    except Exception as err:
+        logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
+        return 1
+
     if config.monitor_cpu:
         reporters.add(probes.register(FileProbe(config.freq_filename)), 'pimon_clockspeed', 'CPU clock speed')
         reporters.add(probes.register(FileProbe(config.temp_filename, 1000)), 'pimon_temperature', 'CPU temperature')
@@ -157,12 +163,6 @@ def pimon(config):
         reporters.add(probe.get_probe('client_tcp_udp_write'), 'openvpn_client_tcp_udp_write_bytes_total', '')
         reporters.add(probe.get_probe('client_tun_tap_read'), 'openvpn_client_tun_tap_read_bytes_total', '')
         reporters.add(probe.get_probe('client_tun_tap_write'), 'openvpn_client_tun_tap_write_bytes_total', '')
-
-    try:
-        reporters.start()
-    except Exception as err:
-        logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
-        return 1
 
     while True:
         probes.run()

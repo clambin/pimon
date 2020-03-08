@@ -50,6 +50,19 @@ def test_default_config():
 
 
 def test_pimon():
+    config = argparse.Namespace(interval=5, port=8080,
+                                monitor_cpu=True, monitor_cpu_sysfs='.',
+                                monitor_fan=True, monitor_fan_pin=18,
+                                monitor_vpn=True, monitor_vpn_client_status='client.status',
+                                reporter_prometheus=True,
+                                reporter_logfile=True, logfile='logfile.txt',
+                                once=True, stub=True, debug=True,
+                                freq_filename='freq', temp_filename='temp')
+    assert pimon(config) == 0
+    os.remove('logfile.txt')
+
+
+def test_bad_port():
     config = argparse.Namespace(interval=5, port=-1,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
