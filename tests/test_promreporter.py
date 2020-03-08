@@ -5,7 +5,7 @@ from tests.probes import SimpleProbe
 
 
 def test_bad_port():
-    with pytest.raises(Exception) as e:
+    with pytest.raises(Exception):
         reporter = PrometheusReporter(-1)
         reporter.start()
 

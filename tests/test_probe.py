@@ -1,4 +1,5 @@
 import os
+import pytest
 from metrics.probe import FileProbe, ProcessProbe, Probes, ProbeAggregator
 from tests.probes import SimpleProbe
 
@@ -35,12 +36,8 @@ def test_file():
 
 
 def test_bad_file():
-    bad_file = False
-    try:
+    with pytest.raises(FileNotFoundError):
         FileProbe('testfile.txt')
-    except FileNotFoundError:
-        bad_file = True
-    assert bad_file
 
 
 def test_process():
@@ -53,12 +50,8 @@ def test_process():
 
 
 def test_bad_process():
-    bad_file = False
-    try:
+    with pytest.raises(FileNotFoundError):
         SimpleProcessProbe('missing_process_ut.sh')
-    except FileNotFoundError:
-        bad_file = True
-    assert bad_file
 
 
 def test_probes():

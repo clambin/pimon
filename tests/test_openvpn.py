@@ -1,3 +1,4 @@
+import pytest
 from pimon import OpenVPNProbe
 
 
@@ -14,3 +15,7 @@ def test_vpn():
     assert probe.get_probe('client_pre_decompress').measured() == 8
     assert probe.get_probe('client_post_decompress').measured() == 9
 
+
+def test_bad_file():
+    with pytest.raises(FileNotFoundError):
+        probe = OpenVPNProbe('notafile')

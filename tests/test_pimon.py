@@ -49,6 +49,8 @@ def test_default_config():
     assert config.temp_filename == '/sys/devices/virtual/thermal/thermal_zone0/temp'
 
 
+# limitation: we can only run once against prometheus, otherwise
+# prometheus will complain about duplicate metrics
 def test_pimon():
     config = argparse.Namespace(interval=5, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
