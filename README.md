@@ -18,7 +18,7 @@ services:
   pimon:
     image: clambin/pimon:latest
     container_name: pimon
-    command: --sys /host/sys --disable-monitor-fan
+    command: --monitor-cpu-sys /host/sys
     volumes:
       - /sys:/host/sys:ro
     ports:
@@ -49,7 +49,7 @@ Pimon exposes the following metrics to Prometheus:
 The following command line arguments can be passed to pimon:
 
 ```
-sage: pimon.py [-h] [--interval INTERVAL] [--once] [--stub] [--debug]
+Usage: pimon.py [-h] [--interval INTERVAL] [--once] [--stub] [--debug]
                 [--reporter-prometheus [REPORTER_PROMETHEUS]] [--port PORT]
                 [--reporter-logfile [REPORTER_LOGFILE]] [--logfile LOGFILE]
                 [--monitor-cpu [MONITOR_CPU]]
