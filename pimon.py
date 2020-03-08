@@ -138,6 +138,7 @@ def get_configuration(args=None):
     setattr(args, 'freq_filename', 'tests/freq' if args.stub else
             f'{args.monitor_cpu_sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
 
+    # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
     # No need to make this an argument (yet), but we'll already put it in configuration
     # We'll use this in test_pimon to trigger an exception when accessing the GPIO
     setattr(args, 'monitor_fan_pin', 18)
@@ -160,13 +161,20 @@ def initialise(config):
     if not config.reporter_prometheus and not config.reporter_logfile:
         logging.warning('No reporters configured')
 
+    # Ideally this should be done after initialise() but since we can only register prometheus metrics
+    # once (limiting what we can cover in unit testing), we do it here.
+    try:
+        reporters.start()
+    except Exception as err:
+        logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
+        raise RuntimeError
+
     # Probes
     if config.monitor_cpu:
         reporters.add(probes.register(FileProbe(config.freq_filename)), 'pimon_clockspeed', 'CPU clock speed')
         reporters.add(probes.register(FileProbe(config.temp_filename, 1000)), 'pimon_temperature', 'CPU temperature')
     if config.monitor_fan:
         try:
-            # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
             reporters.add(probes.register(GPIOProbe(config.monitor_fan_pin)), 'pimon_fan', 'RPI Fan Status')
         except RuntimeError:
             logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
@@ -184,12 +192,9 @@ def pimon(config):
     logging.info(f'Starting pimon v{version.version}')
     logging.info(f'Configuration: {print_configuration(config)}')
 
-    probes, reporters = initialise(config)
-
     try:
-        reporters.start()
-    except Exception as err:
-        logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
+        probes, reporters = initialise(config)
+    except RuntimeError:
         return 1
 
     while True:
