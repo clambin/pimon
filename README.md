@@ -18,7 +18,7 @@ services:
   pimon:
     image: clambin/pimon:latest
     container_name: pimon
-    command: --monitor-cpu-sys /host/sys
+    command: --monitor-cpu-sysfs /host/sys
     volumes:
       - /sys:/host/sys:ro
     ports:
