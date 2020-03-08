@@ -30,24 +30,52 @@ class GPIOProbe(Probe):
 
 
 class OpenVPNProbe(FileProbe, ProbeAggregator):
+    metrics = {
+        'client_auth_read': {
+            'regex': r'Auth read bytes,(\d+)',
+            'name':  r'openvpn_client_auth_read_bytes_total',
+            'desc':  r'Total amount of authentication traffic read, in bytes.'},
+        'client_pre_compress': {
+            'regex': r'pre-compress bytes,(\d+)',
+            'name':  r'openvpn_client_pre_compress_bytes_total',
+            'desc':  r'Total amount of data before compression, in bytes.'},
+        'client_pre_decompress': {
+            'regex': r'pre-decompress bytes,(\d+)',
+            'name':  r'openvpn_client_pre_decompress_bytes_total',
+            'desc':  r'Total amount of data before decompression, in bytes.'},
+        'client_post_compress': {
+            'regex': r'post-compress bytes,(\d+)',
+            'name': r'openvpn_client_post_compress_bytes_total',
+            'desc': r'Total amount of data after compression, in bytes.'},
+        'client_post_decompress': {
+            'regex': r'post-decompress bytes,(\d+)',
+            'name':  r'openvpn_client_post_decompress_bytes_total',
+            'desc':  r'Total amount of data after decompression, in bytes.'},
+        'client_tcp_udp_read': {
+            'regex': r'TCP/UDP read bytes,(\d+)',
+            'name':  r'openvpn_client_tcp_udp_read_bytes_total',
+            'desc':  r'Total amount of TCP/UDP traffic read, in bytes.'},
+        'client_tcp_udp_write': {
+            'regex': r'TCP/UDP write bytes,(\d+)',
+            'name':  r'openvpn_client_tcp_udp_write_bytes_total',
+            'desc':  r'Total amount of TCP/UDP traffic written, in bytes.'},
+        'client_tun_tap_read': {
+            'regex': r'TUN/TAP read bytes,(\d+)',
+            'name':  r'openvpn_client_tun_tap_read_bytes_total',
+            'desc':  r'Total amount of TUN/TAP traffic read, in bytes.'},
+        'client_tun_tap_write': {
+            'regex': r'TUN/TAP write bytes,(\d+)',
+            'name':  r'openvpn_client_tun_tap_write_bytes_total',
+            'desc':  r'Total amount of TUN/TAP traffic written, in bytes.'}
+    }
+
     def __init__(self, filename):
-        self.regex = {
-            'client_auth_read':       r'Auth read bytes,(\d+)',
-            'client_pre_compress':    r'pre-compress bytes,(\d+)',
-            'client_pre_decompress':  r'pre-decompress bytes,(\d+)',
-            'client_post_decompress': r'post-decompress bytes,(\d+)',
-            'client_post_compress':   r'post-compress bytes,(\d+)',
-            'client_tcp_udp_read':    r'TCP/UDP read bytes,(\d+)',
-            'client_tcp_udp_write':   r'TCP/UDP write bytes,(\d+)',
-            'client_tun_tap_read':    r'TUN/TAP read bytes,(\d+)',
-            'client_tun_tap_write':   r'TUN/TAP write bytes,(\d+)'
-        }
         FileProbe.__init__(self, filename)
-        ProbeAggregator.__init__(self, list(self.regex.keys()))
+        ProbeAggregator.__init__(self, list(self.metrics.keys()))
 
     def process(self, content):
-        for name in self.regex:
-            result = re.search(self.regex[name], content)
+        for name in self.metrics:
+            result = re.search(self.metrics[name]['regex'], content)
             if result:
                 val = int(result.group(1))
                 self.set_value(name, val)
@@ -72,7 +100,6 @@ def get_configuration(args=None):
     default_vpn_client_status = 'client.status'
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--version', action='version', version=f'%(prog)s {version.version}')
     parser.add_argument('--interval', type=int, default=default_interval,
                         help=f'Time between measurements (default: {default_interval} sec)')
     parser.add_argument('--once', action='store_true',
@@ -103,6 +130,7 @@ def get_configuration(args=None):
                         help='Enable/disable OpenVPN client metrics')
     parser.add_argument('--monitor-vpn-client-status', default=default_vpn_client_status,
                         help=f'OpenVPN client status file')
+    parser.add_argument('--version', action='version', version=f'%(prog)s {version.version}')
 
     args = parser.parse_args(args)
     setattr(args, 'temp_filename', 'tests/temp' if args.stub else
@@ -120,15 +148,11 @@ def print_configuration(config):
     return ', '.join([f'{key}={val}' for key, val in vars(config).items()])
 
 
-def pimon(config):
-    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
-                        level=logging.DEBUG if config.debug else logging.INFO)
-    logging.info(f'Starting pimon v{version.version}')
-    logging.info(f'Configuration: {print_configuration(config)}')
-
+def initialise(config):
     reporters = Reporters()
     probes = Probes()
 
+    # Reporters
     if config.reporter_prometheus:
         reporters.register(PrometheusReporter(config.port))
     if config.reporter_logfile:
@@ -136,12 +160,7 @@ def pimon(config):
     if not config.reporter_prometheus and not config.reporter_logfile:
         logging.warning('No reporters configured')
 
-    try:
-        reporters.start()
-    except Exception as err:
-        logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
-        return 1
-
+    # Probes
     if config.monitor_cpu:
         reporters.add(probes.register(FileProbe(config.freq_filename)), 'pimon_clockspeed', 'CPU clock speed')
         reporters.add(probes.register(FileProbe(config.temp_filename, 1000)), 'pimon_temperature', 'CPU temperature')
@@ -153,22 +172,32 @@ def pimon(config):
             logging.warning('Could not add Fan monitor.  Possibly /dev/gpiomem isn\'t accessible?')
     if config.monitor_vpn:
         probe = probes.register(OpenVPNProbe(config.monitor_vpn_client_status))
-        reporters.add(probe.get_probe('client_auth_read'), 'openvpn_client_auth_read_bytes_total', '')
-        reporters.add(probe.get_probe('client_pre_compress'), 'openvpn_client_pre_compress_bytes_total', '')
-        reporters.add(probe.get_probe('client_pre_decompress'), 'openvpn_client_pre_decompress_bytes_total', '')
-        reporters.add(probe.get_probe('client_post_compress'), 'openvpn_client_post_compress_bytes_total', '')
-        reporters.add(probe.get_probe('client_post_decompress'), 'openvpn_client_post_decompress_bytes_total', '')
-        reporters.add(probe.get_probe('client_tcp_udp_read'), 'openvpn_client_tcp_udp_read_bytes_total', '')
-        reporters.add(probe.get_probe('client_tcp_udp_write'), 'openvpn_client_tcp_udp_write_bytes_total', '')
-        reporters.add(probe.get_probe('client_tun_tap_read'), 'openvpn_client_tun_tap_read_bytes_total', '')
-        reporters.add(probe.get_probe('client_tun_tap_write'), 'openvpn_client_tun_tap_write_bytes_total', '')
+        for metric in OpenVPNProbe.metrics.keys():
+            reporters.add(probe.get_probe(metric), probe.metrics[metric]['name'], probe.metrics[metric]['desc'])
+
+    return probes, reporters
+
+
+def pimon(config):
+    logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S',
+                        level=logging.DEBUG if config.debug else logging.INFO)
+    logging.info(f'Starting pimon v{version.version}')
+    logging.info(f'Configuration: {print_configuration(config)}')
+
+    probes, reporters = initialise(config)
+
+    try:
+        reporters.start()
+    except Exception as err:
+        logging.fatal(f"Could not start prometheus client on port {config.port}: {err}")
+        return 1
 
     while True:
+        time.sleep(config.interval)
         probes.run()
         reporters.run()
         if config.once:
             break
-        time.sleep(config.interval)
     return 0
 
 

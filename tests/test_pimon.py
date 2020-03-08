@@ -2,7 +2,7 @@ import argparse
 import os
 import pytest
 
-from pimon import pimon, get_configuration, str2bool
+from pimon import pimon, get_configuration, str2bool, initialise, OpenVPNProbe
 
 
 def test_str2bool():
@@ -51,8 +51,24 @@ def test_default_config():
 
 # limitation: we can only run once against prometheus, otherwise
 # prometheus will complain about duplicate metrics
+def test_initialise():
+    config = argparse.Namespace(interval=0, port=8080,
+                                monitor_cpu=True, monitor_cpu_sysfs='.',
+                                monitor_fan=True, monitor_fan_pin=18,
+                                monitor_vpn=True, monitor_vpn_client_status='client.status',
+                                reporter_prometheus=False,
+                                reporter_logfile=True, logfile='logfile.txt',
+                                once=True, stub=True, debug=True,
+                                freq_filename='freq', temp_filename='temp')
+    probes, reporters = initialise(config)
+    assert len(probes.probes) == 4
+    assert type(probes.probes[-1]) is OpenVPNProbe
+    assert len(probes.probes[-1].probes) == len(OpenVPNProbe.metrics)
+    assert len(reporters.reporters) == 1
+
+
 def test_pimon():
-    config = argparse.Namespace(interval=5, port=8080,
+    config = argparse.Namespace(interval=0, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
@@ -60,12 +76,14 @@ def test_pimon():
                                 reporter_logfile=True, logfile='logfile.txt',
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp')
+    probes, reporters = setup(config)
+    assert len(probes) == 1
     assert pimon(config) == 0
     os.remove('logfile.txt')
 
 
 def test_bad_port():
-    config = argparse.Namespace(interval=5, port=-1,
+    config = argparse.Namespace(interval=0, port=-1,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
@@ -77,7 +95,7 @@ def test_bad_port():
 
 
 def test_no_gpio():
-    config = argparse.Namespace(interval=5, port=8080,
+    config = argparse.Namespace(interval=0, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=-1,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
@@ -89,7 +107,7 @@ def test_no_gpio():
 
 
 def test_no_reporters():
-    config = argparse.Namespace(interval=5,
+    config = argparse.Namespace(interval=0,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
