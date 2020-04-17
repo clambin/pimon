@@ -52,8 +52,8 @@ def pimon(config):
         return 1
 
     while True:
-        time.sleep(config.interval)
         probes.run()
         if config.once:
             break
+        time.sleep(config.interval)
     return 0

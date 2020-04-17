@@ -59,7 +59,6 @@ class FileProbe(Probe):
         f.close()
 
     def process(self, content):
-        logging.debug(f'{self.filename}: {content} -> {float(content)}')
         return float(content) / self.divider
 
     def measure(self):
