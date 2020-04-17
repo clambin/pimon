@@ -5,22 +5,33 @@ import queue
 import shlex
 import subprocess
 import threading
+import requests
+import json
+import logging
 from abc import ABC, abstractmethod
 
 
 class Probe(ABC):
     def __init__(self):
-        self.val = None
+        self.output = None
 
     @abstractmethod
     def measure(self):
-        """Implement measurement logic in the inherited class"""
+        """Measure one or more values and return then"""
+
+    def process(self, output):
+        return output
+
+    def report(self, output):
+        self.output = output
 
     def measured(self):
-        return self.val
+        return self.output
 
     def run(self):
-        self.val = self.measure()
+        output = self.measure()
+        output = self.process(output)
+        self.report(output)
 
 
 # Convenience class to make code a little simpler
@@ -53,8 +64,7 @@ class FileProbe(Probe):
 
     def measure(self):
         with open(self.filename) as f:
-            content = ''.join(f.readlines())
-            return self.process(content)
+            return ''.join(f.readlines())
 
 
 class ProcessReader:
@@ -99,44 +109,29 @@ class ProcessProbe(Probe, ABC):
         return self.reader.running()
 
     def measure(self):
-        val = None
+        output = None
         # process may not have any data to measure
-        while val is None:
+        while output is None:
             lines = []
             for line in self.reader.read(): lines.append(line)
-            val = self.process(lines)
-        return val
+            output = lines
+        return output
 
 
-class SubProbe(Probe):
-    def __init__(self, name, parent):
+class APIProbe(Probe, ABC):
+    def __init__(self, url, headers=None, data=None):
         super().__init__()
-        self.name = name
-        self.parent = parent
+        self.url = url
+        if headers is None: headers = {}
+        headers['Accept'] = 'application/json'
+        self.headers = headers
+        self.data = data
 
     def measure(self):
-        raise NotImplementedError('This should never be called')
-
-
-class ProbeAggregator(ABC):
-    def __init__(self, names):
-        self.probes = {name: SubProbe(name, self) for name in names}
-
-    def get_probe(self, name):
-        return self.probes[name]
-
-    def get_value(self, name):
-        return self.probes[name].val
-
-    def set_value(self, name, value):
-        self.probes[name].val = value
-
-    def get_values(self):
-        return [self.get_value(probe) for probe in self.probes]
-
-    @abstractmethod
-    def measure(self):
-        """Implement measurement logic in the inherited class"""
-
-    def run(self):
-        self.measure()
+        response = requests.get(self.url, headers=self.headers, json=self.data)
+        if response.status_code is not 200:
+            logging.error("%d - %s" % (response.status_code, response.reason))
+            return None
+        output = response.json()
+        logging.debug(f'{self.url}: {json.dumps(output, indent=3)}')
+        return output

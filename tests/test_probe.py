@@ -1,6 +1,6 @@
 import os
 import pytest
-from metrics.probe import FileProbe, ProcessProbe, Probes, ProbeAggregator, SubProbe
+from metrics.probe import FileProbe, ProcessProbe, Probes, APIProbe
 from tests.probes import SimpleProbe
 
 
@@ -72,44 +72,30 @@ def test_probes():
             assert results[j] == target
 
 
-class DataGenerator:
-    def __init__(self, test_data):
-        self.test_data = test_data
-        self.index = 0
-        self.len = len(test_data)
-
-    def next(self):
-        val = self.test_data[self.index]
-        self.index = (self.index+1) % self.len
-        return val
+class APIProbeTester(APIProbe):
+    def __init(self, url):
+        super().__init__(url)
 
 
-class Aggregator(ProbeAggregator):
-    def __init__(self, test_data):
-        assert type(test_data) is list
-        assert type(test_data[0]) is list
-        names = [f'probe_{i}' for i in range(len(test_data))]
-        super().__init__(names)
-        self.generators = {f'probe_{i}': DataGenerator(test_data[i]) for i in range(len(test_data))}
-
-    def measure(self):
-        for probe in self.probes:
-            self.set_value(probe, self.generators[probe].next())
+@pytest.fixture
+def supply_url():
+    return 'https://reqres.in/api'
 
 
-def test_aggregator():
-    test_data = [
-        [0, 1, 2, 3, 4],
-        [4, 3, 2, 1, 0],
-        [0, 1, 2, 3, 4],
-        [4, 3, 2, 1, 0]
-    ]
-    probe = Aggregator(test_data)
-    for i in range(len(test_data[0])):
-        probe.run()
-        expected = [test_data[n][i] for n in range(len(test_data))]
-        assert probe.get_values() == expected
-    # SubProbe.measure() should never be called
-    with pytest.raises(NotImplementedError) as e:
-        SubProbe('should_fail', probe).measure()
-    assert str(e.value) == 'This should never be called'
+@pytest.mark.parametrize('user_id, first_name', [(1, 'George'), (2, 'Janet')])
+def test_api_probe(supply_url, user_id, first_name):
+    url = supply_url + "/users/" + str(user_id)
+    probe = APIProbeTester(url)
+    probe.run()
+    response = probe.measured()
+    assert response is not None
+    assert response['data']['id'] == user_id
+    assert response['data']['first_name'] == first_name
+
+
+def test_api_probe_exception(supply_url):
+    url = supply_url + "/users/50"
+    probe = APIProbeTester(url)
+    probe.run()
+    response = probe.measured()
+    assert response is None
