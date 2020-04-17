@@ -90,9 +90,9 @@ prometheus:
     - pip install pipenv
     - pipenv install
   script:
-    - pipenv run python main.py --port 8080 --stub &
+    - pipenv run python main.py --port 8080 --stub --debug --interval 1 &
     - TESTPID=$!
-    - sleep 2
+    - sleep 5
     - curl -s localhost:8080/metric | grep '^pimon_clockspeed '
     - curl -s localhost:8080/metric | grep '^pimon_temperature '
     - kill $TESTPID
