@@ -1,3 +1,4 @@
+import logging
 from metrics.probe import FileProbe
 from prometheus_client import Gauge
 
@@ -10,6 +11,7 @@ class CPUTempProbe(FileProbe):
         super().__init__(filename, divider)
 
     def report(self, output):
+        logging.debug(f'{self.filename}: {output}')
         super().report(output)
         TempGAUGE.set(output)
 
@@ -19,5 +21,6 @@ class CPUFreqProbe(FileProbe):
         super().__init__(filename, divider)
 
     def report(self, output):
+        logging.debug(f'{self.filename}: {output}')
         super().report(output)
         FreqGAUGE.set(output)

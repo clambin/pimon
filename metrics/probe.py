@@ -6,7 +6,6 @@ import shlex
 import subprocess
 import threading
 #import requests
-import json
 import logging
 from abc import ABC, abstractmethod
 
@@ -60,6 +59,7 @@ class FileProbe(Probe):
         f.close()
 
     def process(self, content):
+        logging.debug(f'{self.filename}: {content} -> {float(content)}')
         return float(content) / self.divider
 
     def measure(self):

@@ -44,12 +44,7 @@ def pimon(config):
     logging.info(f'Starting pimon v{version}')
     logging.info(f'Configuration: {print_configuration(config)}')
 
-    try:
-        probes = initialise(config)
-    except RuntimeError:
-        return 1
-
-    # Prometheus listener
+    probes = initialise(config)
     try:
         start_http_server(config.port)
     except:
