@@ -5,7 +5,7 @@ import queue
 import shlex
 import subprocess
 import threading
-#import requests
+import requests
 import logging
 from abc import ABC, abstractmethod
 
@@ -117,3 +117,14 @@ class ProcessProbe(Probe, ABC):
         return output
 
 
+class APIProbe(Probe):
+    def __init__(self, url):
+        self.url = url
+
+    def get(self, endpoint=None, headers=None, body=None, params=None):
+        url = f'{self.url}{endpoint}' if endpoint else self.url
+        return requests.get(url, headers=headers, params=params)
+
+    def post(self, endpoint, headers, body=None):
+        url = f'{self.url}{endpoint}' if endpoint else self.url
+        return requests.post(url, headers=headers, json=body)
