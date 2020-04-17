@@ -5,7 +5,7 @@ import queue
 import shlex
 import subprocess
 import threading
-import requests
+#import requests
 import json
 import logging
 from abc import ABC, abstractmethod
@@ -118,20 +118,3 @@ class ProcessProbe(Probe, ABC):
         return output
 
 
-class APIProbe(Probe, ABC):
-    def __init__(self, url, headers=None, data=None):
-        super().__init__()
-        self.url = url
-        if headers is None: headers = {}
-        headers['Accept'] = 'application/json'
-        self.headers = headers
-        self.data = data
-
-    def measure(self):
-        response = requests.get(self.url, headers=self.headers, json=self.data)
-        if response.status_code is not 200:
-            logging.error("%d - %s" % (response.status_code, response.reason))
-            return None
-        output = response.json()
-        logging.debug(f'{self.url}: {json.dumps(output, indent=3)}')
-        return output

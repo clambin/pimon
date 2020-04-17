@@ -1,6 +1,6 @@
 import os
 import pytest
-from metrics.probe import FileProbe, ProcessProbe, Probes, APIProbe
+from metrics.probe import FileProbe, ProcessProbe, Probes
 from tests.probes import SimpleProbe
 
 
@@ -72,30 +72,30 @@ def test_probes():
             assert results[j] == target
 
 
-class APIProbeTester(APIProbe):
-    def __init(self, url):
-        super().__init__(url)
-
-
-@pytest.fixture
-def supply_url():
-    return 'https://reqres.in/api'
-
-
-@pytest.mark.parametrize('user_id, first_name', [(1, 'George'), (2, 'Janet')])
-def test_api_probe(supply_url, user_id, first_name):
-    url = supply_url + "/users/" + str(user_id)
-    probe = APIProbeTester(url)
-    probe.run()
-    response = probe.measured()
-    assert response is not None
-    assert response['data']['id'] == user_id
-    assert response['data']['first_name'] == first_name
-
-
-def test_api_probe_exception(supply_url):
-    url = supply_url + "/users/50"
-    probe = APIProbeTester(url)
-    probe.run()
-    response = probe.measured()
-    assert response is None
+# class APIProbeTester(APIProbe):
+#     def __init(self, url):
+#         super().__init__(url)
+#
+#
+# @pytest.fixture
+# def supply_url():
+#     return 'https://reqres.in/api'
+#
+#
+# @pytest.mark.parametrize('user_id, first_name', [(1, 'George'), (2, 'Janet')])
+# def test_api_probe(supply_url, user_id, first_name):
+#     url = supply_url + "/users/" + str(user_id)
+#     probe = APIProbeTester(url)
+#     probe.run()
+#     response = probe.measured()
+#     assert response is not None
+#     assert response['data']['id'] == user_id
+#     assert response['data']['first_name'] == first_name
+#
+#
+# def test_api_probe_exception(supply_url):
+#     url = supply_url + "/users/50"
+#     probe = APIProbeTester(url)
+#     probe.run()
+#     response = probe.measured()
+#     assert response is None
