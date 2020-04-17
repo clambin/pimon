@@ -2,7 +2,7 @@ from metrics.probe import FileProbe
 from prometheus_client import Gauge
 
 TempGAUGE = Gauge('pimon_temperature', 'RPi CPU Temperature')
-FreqGAUGE = Gauge('pimon_frequency', 'RPi CPU Frequency')
+FreqGAUGE = Gauge('pimon_clockspeed', 'RPi CPU Clock Speed')
 
 
 class CPUTempProbe(FileProbe):

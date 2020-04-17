@@ -9,6 +9,7 @@ WORKDIR /app
 
 COPY *.py Pip* ./
 COPY metrics/*.py metrics/
+COPY pimon/*.py pimon/
 
 RUN apk update && \
     apk --no-cache --virtual .build-deps add gcc musl-dev && \
@@ -21,5 +22,5 @@ RUN apk update && \
 
 EXPOSE 8080
 
-ENTRYPOINT ["/usr/local/bin/python3", "pimon.py"]
+ENTRYPOINT ["/usr/local/bin/python3", "main.py"]
 CMD []
