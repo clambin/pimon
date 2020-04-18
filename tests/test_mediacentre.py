@@ -49,10 +49,10 @@ class MonitorTestProbe(MonitorProbe):
     def __init__(self, host, name, api_key):
         super().__init__(host, name, api_key)
 
-    def call(self, endpoint):
+    def get(self, endpoint=None, headers=None, body=None):
         if self.name == 'sonarr':
             if endpoint == 'api/calendar':
-                return [{
+                return FakeResponse(200, {}, [{
                     "seriesId": 33,
                     "episodeFileId": 3923,
                     "seasonNumber": 7,
@@ -182,11 +182,11 @@ class MonitorTestProbe(MonitorProbe):
                         "id": 1
                     },
                     "id": 1
-                }]
+                }])
             elif endpoint == 'api/queue':
-                return []
+                return FakeResponse(200, {}, [])
             elif endpoint == 'api/series':
-                return [{
+                return FakeResponse(200, {}, [{
                     "title": "XXXX",
                     "alternateTitles": [],
                     "sortTitle": "XXXX",
@@ -386,14 +386,14 @@ class MonitorTestProbe(MonitorProbe):
                     },
                     "qualityProfileId": 3,
                     "id": 9
-                }]
+                }])
         elif self.name == 'radarr':
             if endpoint == 'api/calendar':
-                return []
+                return FakeResponse(200, {}, [])
             if endpoint == 'api/queue':
-                return []
+                return FakeResponse(200, {}, [])
             if endpoint == 'api/movie':
-                return [{
+                return FakeResponse(200, {}, [{
                     "title": "XXXX",
                     "alternativeTitles": [
                         {
@@ -484,7 +484,7 @@ class MonitorTestProbe(MonitorProbe):
                     },
                     "qualityProfileId": 1,
                     "id": 4
-                }]
+                }])
 
 
 def test_transmission():
