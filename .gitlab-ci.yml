@@ -117,7 +117,7 @@ test_arm:
     - .docker_arm
     - .build_only
   script:
-    - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$TAG" --once --stub --debug
+    - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$TAG" --once --stub --debug --monitor-fan=False
 
 publish:
   stage: release
