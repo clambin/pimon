@@ -117,14 +117,15 @@ class ProcessProbe(Probe, ABC):
         return output
 
 
-class APIProbe(Probe):
+class APIProbe(Probe, ABC):
     def __init__(self, url):
+        super().__init__()
         self.url = url
 
     def get(self, endpoint=None, headers=None, body=None, params=None):
         url = f'{self.url}{endpoint}' if endpoint else self.url
-        return requests.get(url, headers=headers, params=params)
+        return requests.get(url, headers=headers, json=body, params=params)
 
-    def post(self, endpoint, headers, body=None):
+    def post(self, endpoint=None, headers=None, body=None):
         url = f'{self.url}{endpoint}' if endpoint else self.url
         return requests.post(url, headers=headers, json=body)

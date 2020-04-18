@@ -1,16 +1,14 @@
 # Copyright 2020 by Christophe Lambin
 # All rights reserved.
 
-import logging
 import time
-
 from prometheus_client import start_http_server
-
 from pimon.version import version
 from pimon.configuration import print_configuration
 from pimon.cpu import *
 from pimon.gpio import GPIOProbe
 from pimon.openvpn import OpenVPNProbe
+from pimon.mediacentre import TransmissionProbe, MonitorProbe
 from metrics.probe import Probes
 
 
@@ -34,7 +32,15 @@ def initialise(config):
             probes.register(OpenVPNProbe(config.monitor_vpn_client_status))
         except FileNotFoundError as err:
             logging.warning(f'Could not add OpenVPN monitor: {err}')
-
+    if config.monitor_mediaserver:
+        if config.monitor_mediaserver:
+            probes.register(TransmissionProbe(config.monitor_mediaserver_transmission))
+        if config.monitor_mediaserver_sonarr:
+            probes.register(MonitorProbe(config.monitor_mediaserver_sonarr, 'sonarr',
+                                         config.monitor_mediaserver_sonarr_apikey))
+        if config.monitor_mediaserver_radarr:
+            probes.register(MonitorProbe(config.monitor_mediaserver_radarr, 'radarr',
+                                         config.monitor_mediaserver_radarr_apikey))
     return probes
 
 

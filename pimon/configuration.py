@@ -21,6 +21,7 @@ def get_configuration(args=None):
     default_vpn_client_status = 'client.status'
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version', version=f'%(prog)s {version}')
     parser.add_argument('--interval', type=int, default=default_interval,
                         help=f'Time between measurements (default: {default_interval} sec)')
     parser.add_argument('--port', type=int, default=default_port,
@@ -44,8 +45,19 @@ def get_configuration(args=None):
                         help='Enable/disable OpenVPN client metrics')
     parser.add_argument('--monitor-vpn-client-status', default=default_vpn_client_status,
                         help=f'OpenVPN client status file')
-    parser.add_argument('--version', action='version', version=f'%(prog)s {version}')
-
+    # Media server monitoring
+    parser.add_argument('--monitor-mediaserver', type=str2bool, nargs='?', default=False,
+                        help='Enable/disable mediaserver metrics')
+    parser.add_argument('--monitor-mediaserver-transmission', default='',
+                        help=f'Transmission address (<host>:<port>)')
+    parser.add_argument('--monitor-mediaserver-sonarr', default='',
+                        help=f'Sonarr address (<host>:<port>)')
+    parser.add_argument('--monitor-mediaserver-sonarr-apikey', default='',
+                        help=f'Sonarr API Key')
+    parser.add_argument('--monitor-mediaserver-radarr', default='',
+                        help=f'Radarr address (<host>:<port>)')
+    parser.add_argument('--monitor-mediaserver-radarr-apikey', default='',
+                        help=f'Radarr API Key')
     args = parser.parse_args(args)
     setattr(args, 'temp_filename',
             'tests/temp' if args.stub else

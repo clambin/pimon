@@ -11,7 +11,8 @@ def test_initialise():
                                 monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
                                 once=True, stub=True, debug=True,
-                                freq_filename='freq', temp_filename='temp')
+                                freq_filename='freq', temp_filename='temp',
+                                monitor_mediaserver=False)
     probes = initialise(config)
     assert len(probes.probes) == 4
     assert type(probes.probes[0]) is CPUFreqProbe
@@ -26,7 +27,8 @@ def test_pimon():
                                 monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
                                 once=True, stub=True, debug=True,
-                                freq_filename='freq', temp_filename='temp')
+                                freq_filename='freq', temp_filename='temp',
+                                monitor_mediaserver=False)
     assert pimon(config) == 0
 
 
@@ -36,5 +38,6 @@ def test_bad_port():
                                 monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
                                 once=True, stub=True, debug=True,
-                                freq_filename='freq', temp_filename='temp')
+                                freq_filename='freq', temp_filename='temp',
+                                monitor_mediaserver=False)
     assert pimon(config) == 1

@@ -41,3 +41,9 @@ def test_default_config():
     assert config.monitor_cpu_sysfs == '/sys'
     assert config.monitor_fan is True
     assert config.temp_filename == '/sys/devices/virtual/thermal/thermal_zone0/temp'
+    assert config.monitor_mediaserver is False
+    assert config.monitor_mediaserver_transmission == ''
+    assert config.monitor_mediaserver_sonarr == ''
+    assert config.monitor_mediaserver_sonarr_apikey == ''
+    assert config.monitor_mediaserver_radarr == ''
+    assert config.monitor_mediaserver_radarr_apikey == ''
