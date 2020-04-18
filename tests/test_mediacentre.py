@@ -20,7 +20,7 @@ class TransmissionTestProbe(TransmissionProbe):
             if headers['X-Transmission-Session-Id'] == '':
                 return FakeResponse(409, {'X-Transmission-Session-Id': 'NewKey'}, {})
             else:
-                return FakeResponse(200, {}, { 'arguments': {
+                return FakeResponse(200, {}, {'arguments': {
                     "activeTorrentCount": 1,
                     "cumulative-stats": {
                         "downloadedBytes": 259842832295,
@@ -49,7 +49,7 @@ class MonitorTestProbe(MonitorProbe):
     def __init__(self, host, name, api_key):
         super().__init__(host, name, api_key)
 
-    def get(self, endpoint=None, headers=None, body=None):
+    def get(self, endpoint=None, headers=None, body=None, params=None):
         if self.name == 'sonarr':
             if endpoint == 'api/calendar':
                 return FakeResponse(200, {}, [{
@@ -184,7 +184,106 @@ class MonitorTestProbe(MonitorProbe):
                     "id": 1
                 }])
             elif endpoint == 'api/queue':
-                return FakeResponse(200, {}, [])
+                return FakeResponse(200, {}, [{
+                    "series": {
+                        "title": "XXXX",
+                        "sortTitle": "XXXX",
+                        "seasonCount": 1,
+                        "status": "continuing",
+                        "overview": "XXXX",
+                        "network": "XXXX",
+                        "airTime": "22:30",
+                        "images": [
+                            {
+                                "coverType": "fanart",
+                                "url": "XXXX"
+                            },
+                            {
+                                "coverType": "banner",
+                                "url": "XXXX"
+                            },
+                            {
+                                "coverType": "poster",
+                                "url": "XXXX",
+                            }
+                        ],
+                        "seasons": [
+                            {
+                                "seasonNumber": 1,
+                                "monitored": True
+                            }
+                        ],
+                        "year": 2020,
+                        "path": "XXXX",
+                        "profileId": 3,
+                        "seasonFolder": True,
+                        "monitored": True,
+                        "useSceneNumbering": False,
+                        "runtime": 30,
+                        "tvdbId": 1,
+                        "tvRageId": 0,
+                        "tvMazeId": 1,
+                        "firstAired": "2020-04-11T22:00:00Z",
+                        "lastInfoSync": "2020-04-18T21:26:31.930624Z",
+                        "seriesType": "standard",
+                        "cleanTitle": "XXXX",
+                        "imdbId": "XXXX",
+                        "titleSlug": "XXXX",
+                        "certification": "XXXX",
+                        "genres": [
+                            "Comedy",
+                            "Drama",
+                            "Romance",
+                            "Thriller"
+                        ],
+                        "tags": [],
+                        "added": "2020-04-18T21:26:31.622049Z",
+                        "ratings": {
+                            "votes": 0,
+                            "value": 0.0
+                        },
+                        "qualityProfileId": 3,
+                        "id": 40
+                    },
+                    "episode": {
+                        "seriesId": 40,
+                        "episodeFileId": 0,
+                        "seasonNumber": 1,
+                        "episodeNumber": 1,
+                        "title": "XXXX",
+                        "airDate": "2020-04-12",
+                        "airDateUtc": "2020-04-13T02:30:00Z",
+                        "overview": "XXXX",
+                        "hasFile": False,
+                        "monitored": True,
+                        "unverifiedSceneNumbering": False,
+                        "lastSearchTime": "2020-04-18T21:26:32.814329Z",
+                        "id": 1736
+                    },
+                    "quality": {
+                        "quality": {
+                            "id": 5,
+                            "name": "WEBDL-720p",
+                            "source": "web",
+                            "resolution": 720
+                        },
+                        "revision": {
+                            "version": 2,
+                            "real": 0
+                        }
+                    },
+                    "size": 489530639.0,
+                    "title": "XXXX",
+                    "sizeleft": 485965824.0,
+                    "timeleft": "03:47:14",
+                    "estimatedCompletionTime": "2020-04-19T01:15:20.195938Z",
+                    "status": "Downloading",
+                    "trackedDownloadStatus": "Ok",
+                    "statusMessages": [],
+                    "downloadId": "XXXX",
+                    "protocol": "torrent",
+                    "id": 1
+                }])
             elif endpoint == 'api/series':
                 return FakeResponse(200, {}, [{
                     "title": "XXXX",
@@ -395,30 +494,25 @@ class MonitorTestProbe(MonitorProbe):
             if endpoint == 'api/movie':
                 return FakeResponse(200, {}, [{
                     "title": "XXXX",
-                    "alternativeTitles": [
-                        {
-                            "sourceType": "tmdb",
-                            "movieId": 2,
-                            "title": "XXXX",
-                            "sourceId": 1,
-                            "votes": 0,
-                            "voteCount": 0,
-                            "language": "english",
-                            "id": 1
-                        }
-                    ],
+                    "alternativeTitles": [{
+                        "sourceType": "tmdb", "movieId": 2,
+                        "title": "XXXX",
+                        "sourceId": 1,
+                        "votes": 0,
+                        "voteCount": 0,
+                        "language": "english",
+                        "id": 1
+                    }],
                     "secondaryYearSourceId": 0,
                     "sortTitle": "XXXX",
                     "sizeOnDisk": 0,
                     "status": "announced",
                     "overview": "The plot is unknown at this time.",
                     "inCinemas": "2021-12-20T23:00:00Z",
-                    "images": [
-                        {
-                            "coverType": "poster",
-                            "url": "XXXX",
-                        }
-                    ],
+                    "images": [{
+                        "coverType": "poster",
+                        "url": "XXXX",
+                    }],
                     "website": "",
                     "downloaded": False,
                     "year": 2021,
@@ -501,7 +595,7 @@ def test_sonarr():
     probe.run()
     measured = probe.measured()
     assert measured['calendar'] == 1
-    assert measured['queue'] == 0
+    assert measured['queue'] == 1
     assert measured['monitored'] == (1, 1)
 
 
