@@ -98,9 +98,9 @@ class MonitorProbe(APIProbe):
             entries = self.call('api/movie')
         else:
             raise NotImplementedError
-        monitored = len(list(filter(lambda entry: entry['monitored'], entries)))
-        unmonitored = len(list(filter(lambda entry: not entry['monitored'], entries)))
-        return monitored, unmonitored
+        monitored = list(filter(lambda entry: entry['monitored'], entries))
+        unmonitored = list(filter(lambda entry: not entry['monitored'], entries))
+        return len(monitored), len(unmonitored)
 
     def measure(self):
         return {

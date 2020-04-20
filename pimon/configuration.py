@@ -34,20 +34,20 @@ def get_configuration(args=None):
                         help='Set logging level to debug')
     # CPU monitoring
     parser.add_argument('--monitor-cpu', type=str2bool, nargs='?', default=True,
-                        help='Enable/Disable monitoring the CPU status')
+                        help='Enable/Disable monitoring the CPU status (default: on)')
     parser.add_argument('--monitor-cpu-sysfs', default=default_sys,
                         help=f'Location of the /sys filesystem (default: {default_sys})')
     # Fan status monitoring
     parser.add_argument('--monitor-fan', type=str2bool, nargs='?', default=True,
-                        help='Enable/Disable monitoring the fan status')
+                        help='Enable/Disable monitoring the fan status (default: on)')
     # OpenVPN monitoring
     parser.add_argument('--monitor-vpn', type=str2bool, nargs='?', default=False,
-                        help='Enable/disable OpenVPN client metrics')
+                        help='Enable/disable OpenVPN client metrics (default: off)')
     parser.add_argument('--monitor-vpn-client-status', default=default_vpn_client_status,
                         help=f'OpenVPN client status file')
     # Media server monitoring
     parser.add_argument('--monitor-mediaserver', type=str2bool, nargs='?', default=False,
-                        help='Enable/disable mediaserver metrics')
+                        help='Enable/disable mediaserver metrics (default: off')
     parser.add_argument('--monitor-mediaserver-transmission', default='',
                         help=f'Transmission address (<host>:<port>)')
     parser.add_argument('--monitor-mediaserver-sonarr', default='',

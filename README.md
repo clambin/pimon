@@ -19,9 +19,13 @@ services:
   pimon:
     image: clambin/pimon:latest
     container_name: pimon
-    command: --monitor-cpu-sys /host/sys
+    command: 
+      - '--monitor-cpu-sys=/host/sys'
+      - '--monitor-vpn=yes'
+      - '--monitor-vpn-client-status=/data/client.status'
     volumes:
       - /sys:/host/sys:ro
+      - /mnt/media/downloads/transmission-home:/data:ro
     ports:
       - 8080:8080/tcp
     devices:
@@ -79,17 +83,17 @@ optional arguments:
   --stub                Use stubs (for debugging only
   --debug               Set logging level to debug
   --monitor-cpu [MONITOR_CPU]
-                        Enable/Disable monitoring the CPU status
+                        Enable/Disable monitoring the CPU status (default: on)
   --monitor-cpu-sysfs MONITOR_CPU_SYSFS
                         Location of the /sys filesystem (default: /sys)
   --monitor-fan [MONITOR_FAN]
-                        Enable/Disable monitoring the fan status
+                        Enable/Disable monitoring the fan status (default: on)
   --monitor-vpn [MONITOR_VPN]
-                        Enable/disable OpenVPN client metrics
+                        Enable/disable OpenVPN client metrics (default: off)
   --monitor-vpn-client-status MONITOR_VPN_CLIENT_STATUS
                         OpenVPN client status file
   --monitor-mediaserver [MONITOR_MEDIASERVER]
-                        Enable/disable mediaserver metrics
+                        Enable/disable mediaserver metrics (default: off
   --monitor-mediaserver-transmission MONITOR_MEDIASERVER_TRANSMISSION
                         Transmission address (<host>:<port>)
   --monitor-mediaserver-sonarr MONITOR_MEDIASERVER_SONARR
@@ -100,8 +104,11 @@ optional arguments:
                         Radarr address (<host>:<port>)
   --monitor-mediaserver-radarr-apikey MONITOR_MEDIASERVER_RADARR_APIKEY
                         Radarr API Key
-
 ```
+
+## Grafana
+
+See the grafana directory for some examples of Grafana panels.
 
 ## Authors
 
