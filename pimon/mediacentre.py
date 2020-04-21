@@ -1,7 +1,9 @@
-import logging
-import requests
 import json
+import logging
+
+import requests
 from prometheus_client import Gauge
+
 from metrics.probe import APIProbe
 
 GAUGES = {
@@ -23,14 +25,17 @@ class TransmissionProbe(APIProbe):
 
     def report(self, output):
         super().report(output)
-        try:
-            GAUGES['active_torrent_count'].set(output['activeTorrentCount'])
-            GAUGES['paused_torrent_count'].set(output['pausedTorrentCount'])
-            GAUGES['download_speed'].set(output['downloadSpeed'])
-            GAUGES['upload_speed'].set(output['uploadSpeed'])
-        except KeyError as err:
-            logging.warning(f'Incomplete output: {err}')
-            logging.debug(json.dumps(output, indent=3))
+        if output is None:
+            logging.warning('No output received from server. Skipping.')
+        else:
+            try:
+                GAUGES['active_torrent_count'].set(output['activeTorrentCount'])
+                GAUGES['paused_torrent_count'].set(output['pausedTorrentCount'])
+                GAUGES['download_speed'].set(output['downloadSpeed'])
+                GAUGES['upload_speed'].set(output['uploadSpeed'])
+            except KeyError as err:
+                logging.warning(f'Incomplete output: {err}')
+                logging.debug(json.dumps(output, indent=3))
 
     def measure(self):
         try:
@@ -60,14 +65,17 @@ class MonitorProbe(APIProbe):
 
     def report(self, output):
         super().report(output)
-        calendar = output['calendar']
-        queue = output['queue']
-        monitored = output['monitored'][0]
-        unmonitored = output['monitored'][1]
-        GAUGES['calendar_count'].labels(self.name).set(calendar)
-        GAUGES['queued_count'].labels(self.name).set(queue)
-        GAUGES['monitored_count'].labels(self.name).set(monitored)
-        GAUGES['unmonitored_count'].labels(self.name).set(unmonitored)
+        if output is None:
+            logging.warning('No output received from server. Skipping.')
+        else:
+            calendar = output['calendar']
+            queue = output['queue']
+            monitored = output['monitored'][0]
+            unmonitored = output['monitored'][1]
+            GAUGES['calendar_count'].labels(self.name).set(calendar)
+            GAUGES['queued_count'].labels(self.name).set(queue)
+            GAUGES['monitored_count'].labels(self.name).set(monitored)
+            GAUGES['unmonitored_count'].labels(self.name).set(unmonitored)
 
     def call(self, endpoint):
         result = None
