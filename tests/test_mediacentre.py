@@ -489,9 +489,204 @@ class MonitorTestProbe(MonitorProbe):
         elif self.name == 'radarr':
             if endpoint == 'api/calendar':
                 return FakeResponse(200, {}, [])
-            if endpoint == 'api/queue':
-                return FakeResponse(200, {}, [])
-            if endpoint == 'api/movie':
+            elif endpoint == 'api/queue':
+                return FakeResponse(200, {}, [
+                    {
+                        "movie": {
+                            "title": "XXXX",
+                            "alternativeTitles": [
+                                {
+                                    "sourceType": "tmdb",
+                                    "movieId": 1,
+                                    "title": "XXXX",
+                                    "sourceId": 1,
+                                    "votes": 0,
+                                    "voteCount": 0,
+                                    "language": "english",
+                                    "id": 1
+                                },
+                                {
+                                    "sourceType": "tmdb",
+                                    "movieId": 1,
+                                    "title": "XXXX",
+                                    "sourceId": 1,
+                                    "votes": 0,
+                                    "voteCount": 0,
+                                    "language": "english",
+                                    "id": 1
+                                },
+                                {
+                                    "sourceType": "tmdb",
+                                    "movieId": 1,
+                                    "title": "XXXX",
+                                    "sourceId": 299534,
+                                    "votes": 0,
+                                    "voteCount": 0,
+                                    "language": "english",
+                                    "id": 1
+                                }
+                            ],
+                            "secondaryYearSourceId": 0,
+                            "sortTitle": "XXXX",
+                            "sizeOnDisk": 0,
+                            "status": "released",
+                            "overview": "XXXX",
+                            "inCinemas": "2019-04-23T22:00:00Z",
+                            "physicalRelease": "2019-07-30T00:00:00Z",
+                            "images": [
+                                {
+                                    "coverType": "poster",
+                                    "url": "XXXX",
+                                },
+                                {
+                                    "coverType": "fanart",
+                                    "url": "XXXX",
+                                }
+                            ],
+                            "website": "XXXX",
+                            "downloaded": False,
+                            "year": 2019,
+                            "hasFile": False,
+                            "youTubeTrailerId": "XXXX",
+                            "studio": "XXXX",
+                            "path": "XXXX",
+                            "profileId": 1,
+                            "pathState": "static",
+                            "monitored": True,
+                            "minimumAvailability": "announced",
+                            "isAvailable": True,
+                            "folderName": "XXXX",
+                            "runtime": 181,
+                            "lastInfoSync": "2020-04-22T19:36:38.549849Z",
+                            "cleanTitle": "XXXX",
+                            "imdbId": "XXXX",
+                            "tmdbId": 1,
+                            "titleSlug": "XXXX",
+                            "genres": [],
+                            "tags": [],
+                            "added": "2020-04-22T19:36:38.289604Z",
+                            "ratings": {
+                                "votes": 12592,
+                                "value": 8.3
+                            },
+                            "qualityProfileId": 6,
+                            "id": 807
+                        },
+                        "quality": {
+                            "quality": {
+                                "id": 3,
+                                "name": "WEBDL-1080p",
+                                "source": "webdl",
+                                "resolution": "r1080P",
+                                "modifier": "none"
+                            },
+                            "customFormats": [],
+                            "revision": {
+                                "version": 1,
+                                "real": 0
+                            }
+                        },
+                        "size": 6691400202.0,
+                        "title": "XXXX",
+                        "sizeleft": 6392135680.0,
+                        "timeleft": "01:25:09",
+                        "estimatedCompletionTime": "2020-04-22T21:11:41.114137Z",
+                        "status": "Downloading",
+                        "trackedDownloadStatus": "Ok",
+                        "statusMessages": [],
+                        "downloadId": "EDDBD1F8E921FC00F97BF3FC4EAEA69693FBC198",
+                        "protocol": "torrent",
+                        "id": 1
+                    },
+                    {
+                        "movie": {
+                            "title": "XXXX",
+                            "alternativeTitles": [
+                                {
+                                    "sourceType": "tmdb",
+                                    "movieId": 1,
+                                    "title": "XXXX",
+                                    "sourceId": 1,
+                                    "votes": 0,
+                                    "voteCount": 0,
+                                    "language": "english",
+                                    "id": 1
+                                }
+                            ],
+                            "secondaryYearSourceId": 0,
+                            "sortTitle": "XXXX",
+                            "sizeOnDisk": 0,
+                            "status": "released",
+                            "overview": "XXXX",
+                            "inCinemas": "2018-04-24T22:00:00Z",
+                            "physicalRelease": "2018-07-31T00:00:00Z",
+                            "images": [
+                                {
+                                    "coverType": "poster",
+                                    "url": "XXXX",
+                                },
+                                {
+                                    "coverType": "fanart",
+                                    "url": "XXXX",
+                                }
+                            ],
+                            "website": "XXXX",
+                            "downloaded": False,
+                            "year": 2018,
+                            "hasFile": False,
+                            "youTubeTrailerId": "XXXX",
+                            "studio": "XXXX",
+                            "path": "XXX",
+                            "profileId": 1,
+                            "pathState": "static",
+                            "monitored": True,
+                            "minimumAvailability": "announced",
+                            "isAvailable": True,
+                            "folderName": "XXXX",
+                            "runtime": 149,
+                            "lastInfoSync": "2020-04-22T19:36:34.395332Z",
+                            "cleanTitle": "avengersinfinitywar",
+                            "imdbId": "XXXX",
+                            "tmdbId": 1,
+                            "titleSlug": "XXXX",
+                            "genres": [],
+                            "tags": [],
+                            "added": "2020-04-22T19:36:34.090883Z",
+                            "ratings": {
+                                "votes": 17705,
+                                "value": 8.3
+                            },
+                            "qualityProfileId": 6,
+                            "id": 1
+                        },
+                        "quality": {
+                            "quality": {
+                                "id": 3,
+                                "name": "WEBDL-1080p",
+                                "source": "webdl",
+                                "resolution": "r1080P",
+                                "modifier": "none"
+                            },
+                            "customFormats": [],
+                            "revision": {
+                                "version": 1,
+                                "real": 0
+                            }
+                        },
+                        "size": 6874154725.0,
+                        "title": "XXXX",
+                        "sizeleft": 6786826240.0,
+                        "timeleft": "07:53:47",
+                        "estimatedCompletionTime": "2020-04-23T03:40:19.114172Z",
+                        "status": "Downloading",
+                        "trackedDownloadStatus": "Ok",
+                        "statusMessages": [],
+                        "downloadId": "BB82688F14D159A089AE7341CEFA10014AB0D56A",
+                        "protocol": "torrent",
+                        "id": 1428965449
+                    }
+                ])
+            elif endpoint == 'api/movie':
                 return FakeResponse(200, {}, [{
                     "title": "XXXX",
                     "alternativeTitles": [{
@@ -604,5 +799,5 @@ def test_radarr():
     probe.run()
     measured = probe.measured()
     assert measured['calendar'] == 0
-    assert measured['queue'] == 0
+    assert measured['queue'] == 2
     assert measured['monitored'] == (1, 1)
