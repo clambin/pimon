@@ -34,7 +34,7 @@ def initialise(config):
         except FileNotFoundError as err:
             logging.warning(f'Could not add OpenVPN monitor: {err}')
     if config.monitor_mediaserver:
-        if config.monitor_mediaserver:
+        if config.monitor_mediaserver_transmission:
             probes.register(TransmissionProbe(config.monitor_mediaserver_transmission))
         if config.monitor_mediaserver_sonarr:
             probes.register(MonitorProbe(config.monitor_mediaserver_sonarr, 'sonarr',
