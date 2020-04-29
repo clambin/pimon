@@ -1,5 +1,5 @@
 import re
-from pymetrics.probe import FileProbe
+from pimetrics.probe import FileProbe
 from prometheus_client import Gauge
 
 GAUGES = {
