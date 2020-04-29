@@ -8,7 +8,6 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY *.py Pip* ./
-COPY metrics/*.py metrics/
 COPY pimon/*.py pimon/
 
 RUN apk update && \
