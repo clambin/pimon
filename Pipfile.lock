@@ -39,10 +39,10 @@
         },
         "pimetrics": {
             "hashes": [
-                "sha256:7df7c05e05d86312ad97410ba2cf8496f47b82467fb6fa6ad7349097f3656b07"
+                "sha256:4e812545faa82c6b7aa7e21e50c202d5223278ecb66612749f0b74306fa31f1b"
             ],
             "index": "pypi",
-            "version": "==0.1.6"
+            "version": "==0.1.9"
         },
         "prometheus-client": {
             "hashes": [
