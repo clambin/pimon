@@ -21,26 +21,19 @@ def test_initialise():
     assert type(probes.probes[3]) is OpenVPNProbe
 
 
-def test_pimon():
+def test_bad_temp_filename():
     config = argparse.Namespace(interval=0, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
                                 once=True, stub=True, debug=True,
-                                freq_filename='freq', temp_filename='temp',
+                                freq_filename='freq', temp_filename='notafile',
                                 monitor_mediaserver=False)
-    assert pimon(config) == 0
-
-
-def test_bad_freq_filename():
-    config = argparse.Namespace(interval=0, port=8080,
-                                monitor_cpu=True, monitor_cpu_sysfs='.',
-                                monitor_fan=True, monitor_fan_pin=18,
-                                monitor_vpn=True, monitor_vpn_client_status='client.status',
-                                once=True, stub=True, debug=True,
-                                freq_filename='notafile', temp_filename='temp',
-                                monitor_mediaserver=False)
-    assert pimon(config) == 0
+    probes = initialise(config)
+    assert len(probes.probes) == 3
+    assert type(probes.probes[0]) is CPUFreqProbe
+    assert type(probes.probes[1]) is GPIOProbe
+    assert type(probes.probes[2]) is OpenVPNProbe
 
 
 def test_bad_fan_pin():
@@ -51,15 +44,35 @@ def test_bad_fan_pin():
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp',
                                 monitor_mediaserver=False)
+    probes = initialise(config)
+    assert len(probes.probes) == 3
+    assert type(probes.probes[0]) is CPUFreqProbe
+    assert type(probes.probes[1]) is CPUTempProbe
+    assert type(probes.probes[2]) is OpenVPNProbe
+
+
+def test_bad_vpn_file():
+    config = argparse.Namespace(interval=0, port=8080,
+                                monitor_cpu=True, monitor_cpu_sysfs='.',
+                                monitor_fan=True, monitor_fan_pin=18,
+                                monitor_vpn=True, monitor_vpn_client_status='notafile',
+                                once=True, stub=True, debug=True,
+                                freq_filename='freq', temp_filename='temp',
+                                monitor_mediaserver=False)
+    probes = initialise(config)
+    assert len(probes.probes) == 3
+    assert type(probes.probes[0]) is CPUFreqProbe
+    assert type(probes.probes[1]) is CPUTempProbe
+    assert type(probes.probes[2]) is GPIOProbe
+
+
+def test_pimon():
+    config = argparse.Namespace(interval=0, port=8080,
+                                monitor_cpu=True, monitor_cpu_sysfs='.',
+                                monitor_fan=True, monitor_fan_pin=18,
+                                monitor_vpn=True, monitor_vpn_client_status='client.status',
+                                once=True, stub=True, debug=True,
+                                freq_filename='freq', temp_filename='temp',
+                                monitor_mediaserver=False)
     assert pimon(config) == 0
 
-
-# def test_bad_port():
-#     config = argparse.Namespace(interval=0, port=-1,
-#                                 monitor_cpu=True, monitor_cpu_sysfs='.',
-#                                 monitor_fan=True, monitor_fan_pin=18,
-#                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
-#                                 once=True, stub=True, debug=True,
-#                                 freq_filename='freq', temp_filename='temp',
-#                                 monitor_mediaserver=False)
-#     assert pimon(config) == 1
