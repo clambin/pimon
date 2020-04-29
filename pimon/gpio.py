@@ -1,4 +1,4 @@
-from metrics.probe import Probe
+from pymetrics.probe import Probe
 from prometheus_client import Gauge
 
 try:

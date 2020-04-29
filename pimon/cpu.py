@@ -1,5 +1,5 @@
 import logging
-from metrics.probe import FileProbe
+from pymetrics.probe import FileProbe
 from prometheus_client import Gauge
 
 TempGAUGE = Gauge('pimon_temperature', 'RPi CPU Temperature')

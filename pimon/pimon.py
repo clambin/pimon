@@ -9,7 +9,7 @@ from pimon.cpu import *
 from pimon.gpio import GPIOProbe
 from pimon.openvpn import OpenVPNProbe
 from pimon.mediacentre import TransmissionProbe, MonitorProbe
-from metrics.probe import Probes
+from pymetrics.probe import Probes
 
 
 def initialise(config):

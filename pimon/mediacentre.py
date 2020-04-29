@@ -4,7 +4,7 @@ import logging
 import requests
 from prometheus_client import Gauge
 
-from metrics.probe import APIProbe
+from pymetrics.probe import APIProbe
 
 GAUGES = {
     'active_torrent_count': Gauge('mediaserver_active_torrent_count', 'Active torrents'),
