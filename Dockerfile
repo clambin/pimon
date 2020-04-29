@@ -7,8 +7,7 @@ COPY --from=qemu /usr/bin/qemu-arm-static /usr/bin
 RUN mkdir /app
 WORKDIR /app
 
-COPY *.py Pip* ./
-COPY pimon/*.py pimon/
+COPY Pip* ./
 
 RUN apk update && \
     apk --no-cache --virtual .build-deps add gcc musl-dev && \
@@ -19,7 +18,10 @@ RUN apk update && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/*
 
+COPY pimon.py ./
+COPY pimon/*.py pimon/
+
 EXPOSE 8080
 
-ENTRYPOINT ["/usr/local/bin/python3", "main.py"]
+ENTRYPOINT ["/usr/local/bin/python3", "pimon.py"]
 CMD []
