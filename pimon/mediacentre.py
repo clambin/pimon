@@ -116,5 +116,3 @@ class MonitorProbe(APIProbe):
             'queue':     self.measure_queue(),
             'monitored': self.measure_monitored()
         }
-
-

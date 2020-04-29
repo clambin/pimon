@@ -2,10 +2,11 @@
 # All rights reserved.
 
 import time
+import logging
 from prometheus_client import start_http_server
 from pimon.version import version
 from pimon.configuration import print_configuration
-from pimon.cpu import *
+from pimon.cpu import CPUTempProbe, CPUFreqProbe
 from pimon.gpio import GPIOProbe
 from pimon.openvpn import OpenVPNProbe
 from pimon.mediacentre import TransmissionProbe, MonitorProbe
@@ -50,13 +51,10 @@ def pimon(config):
     logging.info(f'Starting pimon v{version}')
     logging.info(f'Configuration: {print_configuration(config)}')
 
-    probes = initialise(config)
-    try:
-        start_http_server(config.port)
-    except:
-        logging.fatal('Could not start Prometheus listener')
-        return 1
+    # todo: exception handling. return 1 if we catch one
+    start_http_server(config.port)
 
+    probes = initialise(config)
     while True:
         probes.run()
         if config.once:

@@ -32,12 +32,12 @@ def test_pimon():
     assert pimon(config) == 0
 
 
-def test_bad_port():
-    config = argparse.Namespace(interval=0, port=-1,
-                                monitor_cpu=True, monitor_cpu_sysfs='.',
-                                monitor_fan=True, monitor_fan_pin=18,
-                                monitor_vpn=True, monitor_vpn_client_status='client.status',
-                                once=True, stub=True, debug=True,
-                                freq_filename='freq', temp_filename='temp',
-                                monitor_mediaserver=False)
-    assert pimon(config) == 1
+# def test_bad_port():
+#     config = argparse.Namespace(interval=0, port=-1,
+#                                 monitor_cpu=True, monitor_cpu_sysfs='.',
+#                                 monitor_fan=True, monitor_fan_pin=18,
+#                                 monitor_vpn=True, monitor_vpn_client_status='client.status',
+#                                 once=True, stub=True, debug=True,
+#                                 freq_filename='freq', temp_filename='temp',
+#                                 monitor_mediaserver=False)
+#     assert pimon(config) == 1

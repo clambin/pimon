@@ -1,4 +1,3 @@
-import logging
 from pimetrics.probe import FileProbe
 from prometheus_client import Gauge
 
