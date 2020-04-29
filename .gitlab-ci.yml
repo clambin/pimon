@@ -27,13 +27,9 @@ stages:
     - tags
 
 .docker:
-  # docker:stable (19.03.6) sometimes hangs
-  # https://gitlab.com/gitlab-com/support-forum/issues/5202
-  #image: docker:19.03.5
   image: docker:stable
   services:
     - docker:stable-dind
-    #- docker:19.03.5-dind
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_HOST: tcp://docker:2376
@@ -45,7 +41,6 @@ stages:
     - docker
     - shared
   before_script:
-    # TODO: wrap TAG logic in a script and call that when needed?
     - export VERSION=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
     - if [[ $CI_COMMIT_REF_NAME == "master" ]]; then
          export TAG=$VERSION;
@@ -136,8 +131,8 @@ github:
     refs:
       - master
   before_script:
-    - export TAG=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
+    - export VERSION=$(grep -i ^version pimon/version.py | awk '{ print $3 }' | tr -d \');
   script:
     - git remote set-url origin "https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$CI_PROJECT_PATH.git"
-    - git tag $TAG
+    - git tag $VERSION
     - git push --tags
