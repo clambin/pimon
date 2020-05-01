@@ -8,7 +8,7 @@ stages:
   only:
     changes:
       - "*.py"
-      - "metrics/*.py"
+      - "pimon/*.py"
       - "tests/*.py"
       - .gitlab-ci.yml
   except:
@@ -18,18 +18,16 @@ stages:
   only:
     changes:
       - "*.py"
-      - "metrics/*.py"
+      - "pimon/*.py"
       - "Dockerfile*"
       - .gitlab-ci.yml
   except:
     - tags
 
 .docker:
-  # docker:stable (19.03.6) sometimes hangs
-  # https://gitlab.com/gitlab-com/support-forum/issues/5202
-  image: docker:19.03.5
+  image: docker:stable
   services:
-    - docker:19.03.5-dind
+    - docker:stable-dind
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_HOST: tcp://docker:2376
@@ -41,7 +39,6 @@ stages:
     - docker
     - shared
   before_script:
-    # TODO: wrap TAG logic in a script and call that when needed?
     - export VERSION=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
     - if [[ $CI_COMMIT_REF_NAME == "master" ]]; then
          export TAG=$VERSION;
@@ -68,7 +65,7 @@ flake8:
     - pip install pipenv
     - pipenv install --dev
   script:
-    - pipenv run flake8 --max-line-length 120 *.py metric/*.py
+    - pipenv run flake8 --max-line-length 120 *.py pimon/*.py
 
 pytest:
   stage: test
@@ -79,8 +76,11 @@ pytest:
     - pipenv install --dev
   script:
     - pipenv check
-    - cd tests && pipenv run pytest --cov
+    - cd tests && pipenv run pytest --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
+  artifacts:
+    reports:
+      junit: tests/report.xml
 
 prometheus:
   stage: test
@@ -90,9 +90,9 @@ prometheus:
     - pip install pipenv
     - pipenv install
   script:
-    - pipenv run python pimon.py --port 8080 --stub &
+    - pipenv run python pimon.py --port 8080 --stub --debug --interval 1 &
     - TESTPID=$!
-    - sleep 2
+    - sleep 5
     - curl -s localhost:8080/metric | grep '^pimon_clockspeed '
     - curl -s localhost:8080/metric | grep '^pimon_temperature '
     - kill $TESTPID
@@ -104,7 +104,8 @@ build_arm:
     - .build_only
   script:
     - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-    - docker build --pull -t "$CI_PROJECT_PATH":"$TAG" .
+    - docker pull "$CI_PROJECT_PATH":"$TAG" || true
+    - docker build --cache-from "$CI_PROJECT_PATH":"$TAG" --pull -t "$CI_PROJECT_PATH":"$TAG" .
     - docker push "$CI_PROJECT_PATH":"$TAG"
 
 test_arm:
@@ -113,7 +114,7 @@ test_arm:
     - .docker_arm
     - .build_only
   script:
-    - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$TAG" --once --stub --debug
+    - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$TAG" --once --stub --debug --monitor-fan=False
 
 publish:
   stage: release
@@ -132,8 +133,8 @@ github:
     refs:
       - master
   before_script:
-    - export TAG=$(grep -i ^version version.py | awk '{ print $3 }' | tr -d \');
+    - export VERSION=$(grep -i ^version pimon/version.py | awk '{ print $3 }' | tr -d \');
   script:
     - git remote set-url origin "https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$CI_PROJECT_PATH.git"
-    - git tag $TAG
+    - git tag $VERSION
     - git push --tags

@@ -4,11 +4,9 @@ MAINTAINER Christophe Lambin <christophe.lambin@gmail.com>
 
 COPY --from=qemu /usr/bin/qemu-arm-static /usr/bin
 
-RUN mkdir /app
 WORKDIR /app
 
-COPY *.py Pip* ./
-COPY metrics/*.py metrics/
+COPY Pip* ./
 
 RUN apk update && \
     apk --no-cache --virtual .build-deps add gcc musl-dev && \
@@ -18,6 +16,9 @@ RUN apk update && \
     pip install --no-cache-dir rpi.gpio && \
     apk del .build-deps && \
     rm -rf /var/cache/apk/*
+
+COPY pimon.py ./
+COPY pimon/*.py pimon/
 
 EXPOSE 8080
 
