@@ -47,7 +47,7 @@ class MonitorTestProbe(MonitorProbe):
         super().__init__(host, name, api_key)
 
     def get(self, endpoint=None, headers=None, body=None, params=None):
-        if self.name == 'sonarr':
+        if self.app == self.App.sonarr:
             if endpoint == 'api/calendar':
                 return FakeResponse(200, {}, [{
                     "seriesId": 33,
@@ -483,7 +483,7 @@ class MonitorTestProbe(MonitorProbe):
                     "qualityProfileId": 3,
                     "id": 9
                 }])
-        elif self.name == 'radarr':
+        elif self.app == self.App.radarr:
             if endpoint == 'api/calendar':
                 return FakeResponse(200, {}, [])
             elif endpoint == 'api/queue':
@@ -783,7 +783,7 @@ def test_transmission():
 
 
 def test_sonarr():
-    probe = MonitorTestProbe('localhost:8080', 'sonarr', '')
+    probe = MonitorTestProbe('localhost:8080', MonitorProbe.App.sonarr, '')
     probe.run()
     measured = probe.measured()
     assert measured['calendar'] == 1
@@ -792,7 +792,7 @@ def test_sonarr():
 
 
 def test_radarr():
-    probe = MonitorTestProbe('localhost:8080', 'radarr', '')
+    probe = MonitorTestProbe('localhost:8080', MonitorProbe.App.radarr, '')
     probe.run()
     measured = probe.measured()
     assert measured['calendar'] == 0

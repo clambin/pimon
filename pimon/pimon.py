@@ -37,10 +37,10 @@ def initialise(config):
         if config.monitor_mediaserver_transmission:
             probes.register(TransmissionProbe(config.monitor_mediaserver_transmission))
         if config.monitor_mediaserver_sonarr:
-            probes.register(MonitorProbe(config.monitor_mediaserver_sonarr, 'sonarr',
+            probes.register(MonitorProbe(config.monitor_mediaserver_sonarr, MonitorProbe.App.sonarr,
                                          config.monitor_mediaserver_sonarr_apikey))
         if config.monitor_mediaserver_radarr:
-            probes.register(MonitorProbe(config.monitor_mediaserver_radarr, 'radarr',
+            probes.register(MonitorProbe(config.monitor_mediaserver_radarr, MonitorProbe.App.radarr,
                                          config.monitor_mediaserver_radarr_apikey))
     return probes
 
@@ -51,7 +51,6 @@ def pimon(config):
     logging.info(f'Starting pimon v{version}')
     logging.info(f'Configuration: {print_configuration(config)}')
 
-    # todo: exception handling. return 1 if we catch one
     start_http_server(config.port)
 
     probes = initialise(config)

@@ -1,6 +1,6 @@
 import json
 import logging
-
+from enum import Enum
 import requests
 from prometheus_client import Gauge
 
@@ -58,24 +58,26 @@ class TransmissionProbe(APIProbe):
 
 
 class MonitorProbe(APIProbe):
-    def __init__(self, host, name, api_key):
+    class App(Enum):
+        sonarr = 0
+        radarr = 1
+
+    def __init__(self, host, app, api_key):
         super().__init__(f'http://{host}/')
         self.api_key = api_key
-        self.name = name
+        self.app = app
 
     def report(self, output):
         super().report(output)
-        if output is None:
-            logging.warning('No output received from server. Skipping.')
-        else:
+        if output:
             calendar = output['calendar']
             queue = output['queue']
             monitored = output['monitored'][0]
             unmonitored = output['monitored'][1]
-            GAUGES['calendar_count'].labels(self.name).set(calendar)
-            GAUGES['queued_count'].labels(self.name).set(queue)
-            GAUGES['monitored_count'].labels(self.name).set(monitored)
-            GAUGES['unmonitored_count'].labels(self.name).set(unmonitored)
+            GAUGES['calendar_count'].labels(self.app.name).set(calendar)
+            GAUGES['queued_count'].labels(self.app.name).set(queue)
+            GAUGES['monitored_count'].labels(self.app.name).set(monitored)
+            GAUGES['unmonitored_count'].labels(self.app.name).set(unmonitored)
 
     def call(self, endpoint):
         result = None
@@ -100,12 +102,10 @@ class MonitorProbe(APIProbe):
         return len(queue)
 
     def measure_monitored(self):
-        if self.name == 'sonarr':
+        if self.app == self.App.sonarr:
             entries = self.call('api/series')
-        elif self.name == 'radarr':
+        elif self.app == self.App.radarr:
             entries = self.call('api/movie')
-        else:
-            raise NotImplementedError
         monitored = list(filter(lambda entry: entry['monitored'], entries))
         unmonitored = list(filter(lambda entry: not entry['monitored'], entries))
         return len(monitored), len(unmonitored)
