@@ -76,8 +76,11 @@ pytest:
     - pipenv install --dev
   script:
     - pipenv check
-    - cd tests && pipenv run pytest --cov
+    - cd tests && pipenv run pytest --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
+  artifacts:
+    reports:
+      junit: report.xml
 
 prometheus:
   stage: test

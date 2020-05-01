@@ -4,7 +4,6 @@ MAINTAINER Christophe Lambin <christophe.lambin@gmail.com>
 
 COPY --from=qemu /usr/bin/qemu-arm-static /usr/bin
 
-RUN mkdir /app
 WORKDIR /app
 
 COPY Pip* ./
