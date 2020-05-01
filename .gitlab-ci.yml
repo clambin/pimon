@@ -80,7 +80,7 @@ pytest:
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
   artifacts:
     reports:
-      junit: report.xml
+      junit: tests/report.xml
 
 prometheus:
   stage: test
