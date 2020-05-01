@@ -104,8 +104,8 @@ build_arm:
     - .build_only
   script:
     - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-    - docker pull "$CI_PROJECT_PATH":"$TAG" || true
-    - docker build --cache-from "$CI_PROJECT_PATH":"$TAG" --pull -t "$CI_PROJECT_PATH":"$TAG" .
+    - docker pull "$CI_PROJECT_PATH":"$TAG" && CACHE="--cache-from $CI_PROJECT_PATH:$TAG"
+    - docker build $CACHE --pull -t "$CI_PROJECT_PATH":"$TAG" .
     - docker push "$CI_PROJECT_PATH":"$TAG"
 
 test_arm:
