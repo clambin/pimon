@@ -57,7 +57,7 @@ def get_configuration(args=None):
     parser.add_argument('--monitor-mediaserver-radarr', default='',
                         help='Radarr address (<host>:<port>)')
     parser.add_argument('--monitor-mediaserver-radarr-apikey', default='',
-                        help='Radarr API Key')
+                        help=f'Radarr API Key')  # make flake8 fail
     args = parser.parse_args(args)
     setattr(args, 'temp_filename',
             'tests/temp' if args.stub else

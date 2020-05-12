@@ -6,6 +6,7 @@ stages:
 
 .test_only:
   rules:
+    # should we add "- if: '$CI_COMMIT_TAG == null'" ???
     - changes:
         - "*.py"
         - "pimon/*.py"
@@ -13,14 +14,13 @@ stages:
         - .gitlab-ci.yml
 
 .build_only:
-  only:
-    changes:
-      - "*.py"
-      - "pimon/*.py"
-      - "Dockerfile*"
-      - .gitlab-ci.yml
-  except:
-    - tags
+  rules:
+    # should we add "- if: '$CI_COMMIT_TAG == null'" ???
+    - changes:
+        - "*.py"
+        - "pimon/*.py"
+        - "Dockerfile*"
+        - .gitlab-ci.yml
 
 .docker:
   image: docker:stable
