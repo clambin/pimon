@@ -5,14 +5,12 @@ stages:
   - release
 
 .test_only:
-  only:
-    changes:
-      - "*.py"
-      - "pimon/*.py"
-      - "tests/*.py"
-      - .gitlab-ci.yml
-  except:
-    - tags
+  rules:
+    - changes:
+        - "*.py"
+        - "pimon/*.py"
+        - "tests/*.py"
+        - .gitlab-ci.yml
 
 .build_only:
   only:
