@@ -10,6 +10,7 @@ stages:
       - "*.py"
       - "pimon/*.py"
       - "tests/*.py"
+      - .gitlab-ci.yml
   except:
     - tags
 
