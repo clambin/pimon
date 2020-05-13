@@ -66,7 +66,7 @@ pretest:
   extends: .docker_arm
   script:
     - docker pull clambin/pimon:dev
-    - docker run -v $(pwd)/tests:/app/tests -p 8080:8080 --name pimon --rm clambin/pimon:dev --once --debug --monitor-fan=False
+    - docker run -v $(pwd)/tests:/app/tests -p 8080:8080 --name pimon --rm clambin/pimon:dev --debug --monitor-fan=False
     - sleep 5
     - netstat -an
     - docker stop pimon
