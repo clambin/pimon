@@ -68,7 +68,7 @@ pretest:
     - docker pull clambin/pimon:dev
     - docker run -v $(pwd)/tests:/app/tests -p 8080:8080 --name pimon --rm -d clambin/pimon:dev --debug --monitor-fan=False
     - sleep 5
-    - netstat -an
+    - curl -s docker:8080/metric
     - docker stop pimon
 
 flake8:
