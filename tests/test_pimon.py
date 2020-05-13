@@ -1,8 +1,8 @@
 import argparse
-from pimon.pimon import pimon, initialise
-from pimon.cpu import CPUTempProbe, CPUFreqProbe
-from pimon.gpio import GPIOProbe
-from pimon.openvpn import OpenVPNProbe
+from libpimon.pimon import pimon, initialise
+from libpimon.cpu import CPUTempProbe, CPUFreqProbe
+from libpimon.gpio import GPIOProbe
+from libpimon.openvpn import OpenVPNProbe
 
 
 def test_initialise():

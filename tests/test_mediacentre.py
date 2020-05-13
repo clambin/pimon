@@ -1,4 +1,4 @@
-from pimon.mediacentre import TransmissionProbe, MonitorProbe
+from libpimon.mediacentre import TransmissionProbe, MonitorProbe
 
 
 class FakeResponse:

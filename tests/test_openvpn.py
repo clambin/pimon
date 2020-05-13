@@ -1,5 +1,5 @@
 import pytest
-from pimon.openvpn import OpenVPNProbe
+from libpimon.openvpn import OpenVPNProbe
 
 
 def test_vpn():

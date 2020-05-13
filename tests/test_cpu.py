@@ -1,5 +1,5 @@
 import pytest
-from pimon.cpu import *
+from libpimon.cpu import *
 
 
 def test_cpufreq_probe():

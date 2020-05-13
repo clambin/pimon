@@ -18,7 +18,7 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 
 COPY pimon.py ./
-COPY pimon/*.py pimon/
+COPY libpimon/*.py pimon/
 
 EXPOSE 8080
 

@@ -15,7 +15,7 @@ workflow:
   rules:
     - changes:
         - "*.py"
-        - "pimon/*.py"
+        - "libpimon/*.py"
         - "tests/*.py"
         - .gitlab-ci.yml
 
@@ -23,7 +23,7 @@ workflow:
   rules:
     - changes:
         - "*.py"
-        - "pimon/*.py"
+        - "libpimon/*.py"
         - "Dockerfile*"
         - .gitlab-ci.yml
 
@@ -42,7 +42,7 @@ workflow:
     - docker
     - shared
   before_script:
-    - export VERSION=$(grep -i ^version pimon/version.py | awk '{ print $3 }' | tr -d \');
+    - export VERSION=$(grep -i ^version libpimon/version.py | awk '{ print $3 }' | tr -d \');
     - if [[ $CI_COMMIT_REF_NAME == "master" ]]; then
          export TAG=$VERSION;
       elif [[ $CI_COMMIT_REF_NAME == "release-$VERSION" ]]; then
@@ -68,7 +68,7 @@ flake8:
     - pip install pipenv
     - pipenv install --dev
   script:
-    - pipenv run flake8 --max-line-length 120 *.py pimon/*.py
+    - pipenv run flake8 --max-line-length 120 *.py libpimon/*.py
 
 pytest:
   stage: test
@@ -96,7 +96,7 @@ prometheus:
     - pip install pipenv
     - pipenv install
   script:
-    - pipenv run python pimon.py --port 8080 --stub --debug --interval 1 &
+    - pipenv run python libpimon.py --port 8080 --stub --debug --interval 1 &
     - TESTPID=$!
     - sleep 5
     - curl -s localhost:8080/metric | grep '^pimon_clockspeed '
@@ -137,7 +137,7 @@ github:
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
   before_script:
-    - export VERSION=$(grep -i ^version pimon/version.py | awk '{ print $3 }' | tr -d \');
+    - export VERSION=$(grep -i ^version libpimon/version.py | awk '{ print $3 }' | tr -d \');
   script:
     - git remote set-url origin "https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$CI_PROJECT_PATH.git"
     - git tag $VERSION

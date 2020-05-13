@@ -4,12 +4,12 @@
 import time
 import logging
 from prometheus_client import start_http_server
-from pimon.version import version
-from pimon.configuration import print_configuration
-from pimon.cpu import CPUTempProbe, CPUFreqProbe
-from pimon.gpio import GPIOProbe
-from pimon.openvpn import OpenVPNProbe
-from pimon.mediacentre import TransmissionProbe, MonitorProbe
+from libpimon.version import version
+from libpimon.configuration import print_configuration
+from libpimon.cpu import CPUTempProbe, CPUFreqProbe
+from libpimon.gpio import GPIOProbe
+from libpimon.openvpn import OpenVPNProbe
+from libpimon.mediacentre import TransmissionProbe, MonitorProbe
 from pimetrics.probe import Probes
 
 
