@@ -65,6 +65,7 @@ pretest:
   stage: pretest
   extends: .docker_arm
   script:
+    - apk add --update curl && rm -rf /var/cache/apk/*
     - docker pull clambin/pimon:dev
     - docker run -v $(pwd)/tests:/app/tests -p 8080:8080 --name pimon --rm -d clambin/pimon:dev --debug --monitor-fan=False
     - sleep 5
