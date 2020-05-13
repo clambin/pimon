@@ -88,21 +88,6 @@ pytest:
     reports:
       junit: tests/report.xml
 
-prometheus:
-  stage: test
-  extends: .test_only
-  image: python:3.7
-  before_script:
-    - pip install pipenv
-    - pipenv install
-  script:
-    - pipenv run python pimon.py --port 8080 --stub --debug --interval 1 &
-    - TESTPID=$!
-    - sleep 5
-    - curl -s localhost:8080/metric | grep '^pimon_clockspeed '
-    - curl -s localhost:8080/metric | grep '^pimon_temperature '
-    - kill $TESTPID
-
 build_arm:
   stage: build
   extends:
@@ -122,23 +107,19 @@ test_arm:
   script:
     - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA" --once --stub --debug --monitor-fan=False
 
-publish_tagged:
+publish:
   stage: release
   extends: .docker
   script:
     - docker pull "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA"
     - docker tag "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA" "$CI_PROJECT_PATH":$TAG
     - docker push "$CI_PROJECT_PATH":$TAG
-
-publish_latest:
-  stage: release
-  extends: .docker
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
-  script:
-    - docker pull "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA"
-    - docker tag "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA" "$CI_PROJECT_PATH":latest;
-    - docker push "$CI_PROJECT_PATH":latest
+    - if [[ "$CI_COMMIT_BRANCH" == "master" ]; then
+        docker pull "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA";
+        docker tag "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA" "$CI_PROJECT_PATH":latest;
+        docker push "$CI_PROJECT_PATH":latest;
+      fi
+    - docker rmi "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA"
 
 github:
   stage: release
