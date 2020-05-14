@@ -69,8 +69,6 @@ pytest:
     - pip install pipenv
     - pipenv install --dev
   script:
-    # workaround for https://github.com/pypa/pipenv/issues/4188
-    - PIPENV_PYUP_API_KEY="" pipenv check
     - cd tests && pipenv run pytest --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
   artifacts:
@@ -85,7 +83,8 @@ sast:
     - pip install pipenv
     - pipenv install --dev
   script:
-    - pipenv check
+    # workaround for https://github.com/pypa/pipenv/issues/4188
+    - PIPENV_PYUP_API_KEY="" pipenv check
     - bandit -r libpimon/*.py
 
 build_arm:
