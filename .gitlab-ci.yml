@@ -17,7 +17,6 @@ workflow:
         - "*.py"
         - "libpimon/*.py"
         - "tests/*.py"
-        - .gitlab-ci.yml
 
 .build_only:
   rules:
@@ -94,7 +93,7 @@ build_arm:
     - docker run --rm --privileged multiarch/qemu-user-static:register --reset
     - docker pull $CI_PROJECT_PATH:$TAG || true
     - docker build --cache-from $CI_PROJECT_PATH:$TAG --pull -t $CI_PROJECT_PATH:$TAG .
-    - docker push $CI_PROJECT_PATH:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_PROJECT_PATH:$TAG
 
 test_arm:
   stage : qa
@@ -103,7 +102,7 @@ test_arm:
     - .build_only
   script:
     - apk add --update curl
-    - docker pull $CI_PROJECT_PATH:$CI_COMMIT_SHORT_SHA
+    - docker pull $CI_PROJECT_PATH:$TAG
     - docker run -v $(pwd)/tests:/app/tests -p 8080:8080 --name pimon --rm -d $CI_PROJECT_PATH:$TAG --debug --monitor-fan=False
     - sleep 5
     - curl -s docker:8080/metric | grep '^pimon_clockspeed '
