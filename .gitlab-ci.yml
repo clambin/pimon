@@ -42,9 +42,8 @@ workflow:
     - docker
     - shared
   before_script:
-    - export VERSION=$(grep -i ^version libpimon/version.py | awk '{ print $3 }' | tr -d \');
     - if [[ $CI_COMMIT_BRANCH == "master" ]]; then
-         export TAG=$VERSION;
+         export TAG=$(grep -i ^version libpimon/version.py | awk '{ print $3 }' | tr -d \');
       else
          export TAG="dev";
       fi
@@ -93,9 +92,9 @@ build_arm:
     - .build_only
   script:
     - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-    - docker pull "$CI_PROJECT_PATH":"$TAG" || true
-    - docker build --cache-from $CI_PROJECT_PATH:$TAG --pull -t "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA" .
-    - docker push "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA"
+    - docker pull $CI_PROJECT_PATH:$TAG || true
+    - docker build --cache-from $CI_PROJECT_PATH:$TAG --pull -t $CI_PROJECT_PATH:$TAG .
+    - docker push $CI_PROJECT_PATH:$CI_COMMIT_SHORT_SHA
 
 test_arm:
   stage : qa
@@ -104,25 +103,24 @@ test_arm:
     - .build_only
   script:
     - apk add --update curl
-    - docker pull "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA"
-    - docker run -v $(pwd)/tests:/app/tests -p 8080:8080 --name pimon --rm -d "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA" --debug --monitor-fan=False
+    - docker pull $CI_PROJECT_PATH:$CI_COMMIT_SHORT_SHA
+    - docker run -v $(pwd)/tests:/app/tests -p 8080:8080 --name pimon --rm -d $CI_PROJECT_PATH:$TAG --debug --monitor-fan=False
     - sleep 5
     - curl -s docker:8080/metric | grep '^pimon_clockspeed '
-    - curl -s docker:8080/metric | grep '^pimon_pimon_temperature '
+    - curl -s docker:8080/metric | grep '^pimon_temperature '
     - docker stop pimon
 
 
 publish:
   stage: release
   extends: .docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   script:
-    - docker tag "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA" "$CI_PROJECT_PATH":$TAG
-    - docker push "$CI_PROJECT_PATH":$TAG
-    - if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
-        docker tag "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA" "$CI_PROJECT_PATH":latest;
-        docker push "$CI_PROJECT_PATH":latest;
-      fi
-    - docker rmi "$CI_PROJECT_PATH":"$CI_COMMIT_SHORT_SHA"
+    # TODO: use an interim build label and only tag dev/x.y/latest here
+    # so we only publish once QA passed
+    - docker tag $CI_PROJECT_PATH:$TAG $CI_PROJECT_PATH:latest
+    - docker push $CI_PROJECT_PATH:latest
 
 github:
   stage: release
