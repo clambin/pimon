@@ -79,6 +79,17 @@ pytest:
     reports:
       junit: tests/report.xml
 
+sast:
+  stage: unittest
+  extends: .test_only
+  image: python:3.7
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
+  script:
+    - pipenv check
+    - bandit -r libpimon/*.py
+
 build_arm:
   stage: build
   extends:
