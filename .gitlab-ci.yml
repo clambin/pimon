@@ -85,7 +85,7 @@ sast:
   script:
     # workaround for https://github.com/pypa/pipenv/issues/4188
     - PIPENV_PYUP_API_KEY="" pipenv check
-    - bandit -r libpimon/*.py
+    - pipenv run bandit -r libpimon/*.py
 
 build_arm:
   stage: build
