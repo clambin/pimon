@@ -17,6 +17,7 @@ workflow:
         - "*.py"
         - "libpimon/*.py"
         - "tests/*.py"
+        - .gitlab-ci.yml
 
 .build_only:
   rules:
