@@ -1,11 +1,11 @@
-from pimetrics.probe import FileProbe
+from pimetrics.probe import SysFSProbe
 from prometheus_client import Gauge
 
 TempGAUGE = Gauge('pimon_temperature', 'RPi CPU Temperature')
 FreqGAUGE = Gauge('pimon_clockspeed', 'RPi CPU Clock Speed')
 
 
-class CPUTempProbe(FileProbe):
+class CPUTempProbe(SysFSProbe):
     def __init__(self, filename, divider=1):
         super().__init__(filename, divider)
 
@@ -14,7 +14,7 @@ class CPUTempProbe(FileProbe):
         TempGAUGE.set(output)
 
 
-class CPUFreqProbe(FileProbe):
+class CPUFreqProbe(SysFSProbe):
     def __init__(self, filename, divider=1):
         super().__init__(filename, divider)
 
