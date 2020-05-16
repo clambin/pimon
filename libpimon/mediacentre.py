@@ -24,7 +24,6 @@ class TransmissionProbe(APIProbe):
         self.api_key = ''
 
     def report(self, output):
-        super().report(output)
         if output is None:
             logging.warning('No output received from server. Skipping.')
         else:
@@ -68,7 +67,6 @@ class MonitorProbe(APIProbe):
         self.app = app
 
     def report(self, output):
-        super().report(output)
         if output:
             calendar = output['calendar']
             queue = output['queue']

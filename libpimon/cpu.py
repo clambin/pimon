@@ -10,7 +10,6 @@ class CPUTempProbe(SysFSProbe):
         super().__init__(filename, divider)
 
     def report(self, output):
-        super().report(output)
         TempGAUGE.set(output)
 
 
@@ -19,5 +18,4 @@ class CPUFreqProbe(SysFSProbe):
         super().__init__(filename, divider)
 
     def report(self, output):
-        super().report(output)
         FreqGAUGE.set(output)

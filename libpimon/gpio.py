@@ -20,7 +20,6 @@ class GPIOProbe(Probe):
         GPIO.setup(self.pin, GPIO.OUT)
 
     def report(self, output):
-        super().report(output)
         GAUGE.set(output)
 
     def measure(self):

@@ -41,7 +41,6 @@ class OpenVPNProbe(FileProbe):
         FileProbe.__init__(self, filename)
 
     def report(self, output):
-        super().report(output)
         for name, value in output.items():
             GAUGES[name].set(value)
 
