@@ -17,13 +17,14 @@ workflow:
         - "*.py"
         - "libpimon/*.py"
         - "tests/*.py"
-        - .gitlab-ci.yml
+        - "Pipfile*"
 
 .build_only:
   rules:
     - changes:
         - "*.py"
         - "libpimon/*.py"
+        - "Pipfile*"
         - "Dockerfile*"
         - .gitlab-ci.yml
 
