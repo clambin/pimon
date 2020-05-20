@@ -24,9 +24,7 @@ class TransmissionProbe(APIProbe):
         self.api_key = ''
 
     def report(self, output):
-        if output is None:
-            logging.warning('No output received from server. Skipping.')
-        else:
+        if output:
             try:
                 GAUGES['active_torrent_count'].set(output['activeTorrentCount'])
                 GAUGES['paused_torrent_count'].set(output['pausedTorrentCount'])
