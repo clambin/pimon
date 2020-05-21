@@ -1,5 +1,7 @@
 # pimon
 
+(https://img.shields.io/github/license/clambin/pimon?style=plastic)
+
 Collects metrics from my Raspberry PI and reports them to Prometheus.  Currently supports:
 
 * CPU temperature & frequency
