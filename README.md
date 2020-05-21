@@ -1,6 +1,8 @@
 # pimon
 
-[![pipeline status](https://gitlab.com/clambin/pimon/badges/develop/pipeline.svg)](https://gitlab.com/clambin/pimon/commits/develop)
+![Gitlab pipeline status (branch)](https://img.shields.io/gitlab/pipeline/clambin/pimon/develop?style=plastic)
+![GitHub](https://img.shields.io/github/license/clambin/pimon?style=plastic)
+![Codecov](https://img.shields.io/codecov/c/gh/clambin/pimon?style=plastic)
 
 Collects metrics from my Raspberry PI and reports them to Prometheus.  Currently supports:
 
