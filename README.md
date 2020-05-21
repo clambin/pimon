@@ -1,5 +1,7 @@
 # pimon
 
+[![pipeline status](https://gitlab.com/clambin/pimon/badges/develop/pipeline.svg)](https://gitlab.com/clambin/pimon/commits/develop)
+
 Collects metrics from my Raspberry PI and reports them to Prometheus.  Currently supports:
 
 * CPU temperature & frequency
