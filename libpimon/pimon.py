@@ -47,7 +47,7 @@ def initialise(config):
         if config.monitor_vpn_proxies:
             scheduler.register(
                 OpenVPNStatusProbe(config.monitor_vpn_proxies),
-                30
+                60
             )
         else:
             logging.warning('No VPN Proxies defined. VPN status monitoring is disabled')
