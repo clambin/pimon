@@ -1,6 +1,7 @@
 # pimon
 
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/clambin/pimon?color=green&label=Release&style=plastic)![Codecov](https://img.shields.io/codecov/c/gh/clambin/pimon?style=plastic)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/clambin/pimon?color=green&label=Release&style=plastic)
+![Codecov](https://img.shields.io/codecov/c/gh/clambin/pimon?style=plastic)
 ![Gitlab pipeline status (branch)](https://img.shields.io/gitlab/pipeline/clambin/pimon/develop?style=plastic)
 ![GitHub](https://img.shields.io/github/license/clambin/pimon?style=plastic)
 
@@ -8,7 +9,7 @@ Collects metrics from my Raspberry PI and reports them to Prometheus.  Currently
 
 * CPU temperature & frequency
 * Fan status (currently only supports the pimoroni shim fan; contact me if you use something else)
-* OpenVPN client statistics
+* OpenVPN status & client statistics
 * Transmission, Sonarr & Radarr statistics
 
 ## Getting started
@@ -52,6 +53,7 @@ Pimon exposes the following metrics to Prometheus:
 * openvpn_client_tcp_udp_write_bytes_total
 * openvpn_client_tun_tap_read_bytes_total
 * openvpn_client_tun_tap_write_bytes_total
+* openvpn_client_status
 * mediaserver_active_torrent_count
 * mediaserver_paused_torrent_count
 * mediaserver_download_speed

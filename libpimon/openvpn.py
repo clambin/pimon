@@ -1,5 +1,6 @@
 import re
-from pimetrics.probe import FileProbe
+import logging
+from pimetrics.probe import FileProbe, APIProbe
 from prometheus_client import Gauge
 
 GAUGES = {
@@ -20,7 +21,9 @@ GAUGES = {
     'client_tun_tap_read':
         Gauge('openvpn_client_tun_tap_read_bytes_total', 'Total amount of TUN/TAP traffic read, in bytes.'),
     'client_tun_tap_write':
-        Gauge('openvpn_client_tun_tap_write_bytes_total', 'Total amount of TUN/TAP traffic written, in bytes.')
+        Gauge('openvpn_client_tun_tap_write_bytes_total', 'Total amount of TUN/TAP traffic written, in bytes.'),
+    'client_status':
+        Gauge('openvpn_client_status', 'Status of OpenVPN connection')
 }
 
 
@@ -52,3 +55,24 @@ class OpenVPNProbe(FileProbe):
                 value = int(result.group(1))
                 output[name] = value
         return output
+
+
+class OpenVPNStatusProbe(APIProbe):
+    def __init__(self, proxies=None):
+        proxy_dict = None
+        if proxies:
+            proxy_dict = {}
+            for proxy in proxies.split(','):
+                key = proxy.split(':')[0]
+                proxy_dict[key] = proxy
+        super().__init__('https://ipinfo.io', proxies=proxy_dict)
+
+    def report(self, output):
+        GAUGES['client_status'] = 1 if output is True else 0
+
+    def measure(self):
+        response = self.get()
+        logging.debug(f'response: {response.status_code} - {response.json()}')
+        if response.status_code == 200:
+            return True
+        return False
