@@ -12,7 +12,7 @@ bandit = "*"
 
 [packages]
 prometheus-client = "==0.7.1"
-pimetrics = "==0.2.0"
+pimetrics = "==0.2.3"
 requests = "*"
 
 [requires]
