@@ -46,8 +46,8 @@ def get_configuration(args=None):
     parser.add_argument('--monitor-vpn-client-status', default=default_vpn_client_status,
                         help='OpenVPN client status file')
     parser.add_argument('--monitor-vpn-proxies', default='',
-                        help='Comma-separated list of OpenVPN proxies to use to check connectivity.'
-                             'Requires running a proxy along side the openvpn server (eg haugene/transmission-openvpn)')
+                        help='Comma-separated list of OpenVPN proxies to use to check connectivity. '
+                             'Requires running a proxy alongside the openvpn server (eg haugene/transmission-openvpn)')
     # Media server monitoring
     parser.add_argument('--monitor-mediaserver', type=str2bool, nargs='?', default=False,
                         help='Enable/disable mediaserver metrics (default: off')

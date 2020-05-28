@@ -1,4 +1,5 @@
 import re
+import requests
 import logging
 from pimetrics.probe import FileProbe, APIProbe
 from prometheus_client import Gauge
@@ -71,8 +72,13 @@ class OpenVPNStatusProbe(APIProbe):
         GAUGES['client_status'].set(1 if output is True else 0)
 
     def measure(self):
-        response = self.get()
-        logging.debug(f'response: {response.status_code} - {response.json()}')
-        if response.status_code == 200:
-            return True
+        try:
+            response = self.get()
+            logging.debug(f'response: {response.status_code} - {response.json()}')
+            if response.status_code == 200:
+                return True
+            else:
+                logging.warning(f'OpenVPNStatusProbe failed: {response.status_code}')
+        except requests.exceptions.RequestException as e:
+            logging.warning(f'OpenVPNStatusProbe failed: {e}')
         return False

@@ -10,7 +10,7 @@ codecov = "*"
 
 [packages]
 prometheus-client = "==0.7.1"
-pimetrics = "==0.2.3"
+pimetrics = "==0.3.0"
 requests = "*"
 
 [requires]
