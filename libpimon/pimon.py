@@ -1,7 +1,6 @@
 # Copyright 2020 by Christophe Lambin
 # All rights reserved.
 
-import time
 import logging
 from prometheus_client import start_http_server
 from libpimon.version import version
@@ -10,7 +9,6 @@ from libpimon.cpu import CPUTempProbe, CPUFreqProbe
 from libpimon.gpio import GPIOProbe
 from libpimon.openvpn import OpenVPNProbe, OpenVPNStatusProbe
 from libpimon.mediacentre import TransmissionProbe, MonitorProbe
-from pimetrics.probe import Probes
 from pimetrics.scheduler import Scheduler
 
 

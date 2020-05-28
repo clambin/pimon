@@ -33,9 +33,3 @@ def test_status_with_proxy():
     probe = OpenVPNStatusProbe(proxies="https://localhost:8888")
     probe.run()
     assert probe.measured() is True
-
-
-def test_status_with_bad_proxy():
-    probe = OpenVPNStatusProbe(proxies="https://localhost:8889")
-    with pytest.raises(requests.exceptions.RequestException):
-        probe.run()
