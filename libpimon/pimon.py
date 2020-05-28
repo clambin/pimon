@@ -8,7 +8,7 @@ from libpimon.version import version
 from libpimon.configuration import print_configuration
 from libpimon.cpu import CPUTempProbe, CPUFreqProbe
 from libpimon.gpio import GPIOProbe
-from libpimon.openvpn import OpenVPNProbe
+from libpimon.openvpn import OpenVPNProbe, OpenVPNStatusProbe
 from libpimon.mediacentre import TransmissionProbe, MonitorProbe
 from pimetrics.probe import Probes
 
@@ -33,6 +33,10 @@ def initialise(config):
             probes.register(OpenVPNProbe(config.monitor_vpn_client_status))
         except FileNotFoundError as err:
             logging.warning(f'Could not add OpenVPN monitor: {err}')
+        if config.monitor_vpn_proxies:
+            probes.register(OpenVPNStatusProbe(config.monitor_vpn_proxies))
+        else:
+            logging.warning('No VPN Proxies defined. VPN status monitoring is disabled')
     if config.monitor_mediaserver:
         if config.monitor_mediaserver_transmission:
             probes.register(TransmissionProbe(config.monitor_mediaserver_transmission))

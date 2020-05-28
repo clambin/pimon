@@ -68,7 +68,7 @@ class OpenVPNStatusProbe(APIProbe):
         super().__init__('https://ipinfo.io', proxies=proxy_dict)
 
     def report(self, output):
-        GAUGES['client_status'] = 1 if output is True else 0
+        GAUGES['client_status'].set(1 if output is True else 0)
 
     def measure(self):
         response = self.get()

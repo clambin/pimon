@@ -58,10 +58,9 @@ flake8:
   extends: .test_only
   image: python:3.7
   before_script:
-    - pip install pipenv
-    - pipenv install --dev
+    - pip install flake8
   script:
-    - pipenv run flake8 --max-line-length 120 *.py libpimon/*.py
+    - flake8 --max-line-length 120 *.py libpimon/*.py
 
 pytest:
   stage: unittest
@@ -86,12 +85,13 @@ sast:
   extends: .test_only
   image: python:3.7
   before_script:
-    - pip install pipenv
-    - pipenv install --dev
+    #- pip install pipenv
+    # pipenv install --dev
+    - pip install bandit
   script:
     # workaround for https://github.com/pypa/pipenv/issues/4188
-    - PIPENV_PYUP_API_KEY="" pipenv check
-    - pipenv run bandit -r libpimon/*.py
+    #- PIPENV_PYUP_API_KEY="" pipenv check
+    - bandit -r libpimon/*.py
 
 build_arm:
   stage: build
