@@ -83,9 +83,9 @@ def pimon(config):
     start_http_server(config.port)
 
     scheduler = initialise(config)
-    while True:
-        if config.once:
-            scheduler.run(once=True)
-            break
-        scheduler.run(duration=config.interval)
+    if config.once:
+        scheduler.run(once=True)
+    else:
+        while True:
+            scheduler.run(duration=config.interval)
     return 0
