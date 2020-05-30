@@ -9,7 +9,6 @@ RUN apk update && \
     pip install --upgrade pip && \
     pip install --no-cache-dir --target /gpio rpi.gpio
 
-
 FROM arm32v7/python:3.7-alpine
 MAINTAINER Christophe Lambin <christophe.lambin@gmail.com>
 
