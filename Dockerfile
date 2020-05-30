@@ -3,25 +3,27 @@ FROM arm32v7/python:3.7-alpine as builder
 
 COPY --from=qemu /usr/bin/qemu-arm-static /usr/bin
 
+WORKDIR /gpio
 RUN apk update && \
     apk --no-cache add gcc musl-dev && \
     pip install --upgrade pip && \
-    pip install --no-cache-dir rpi.gpio
+    pip install --no-cache-dir --target /gpio rpi.gpio
+
 
 FROM arm32v7/python:3.7-alpine
 MAINTAINER Christophe Lambin <christophe.lambin@gmail.com>
 
 COPY --from=qemu /usr/bin/qemu-arm-static /usr/bin
-COPY --from=builder /usr/local/lib/python3.7/site-packages/RPi /usr/local/lib/python3.7/site-packages/RPi
+COPY --from=builder /gpio/RPi /usr/local/lib/python3.7/site-packages/RPi
 
 WORKDIR /app
 
 RUN pip install --upgrade pip && \
     pip install pipenv
 
-COPY Pip* ./
+COPY Pipfile Pipfile.lock ./
 
-RUN pipenv install --system --deploy --ignore-pipfile
+RUN pipenv install --system --ignore-pipfile
 
 COPY pimon.py ./
 COPY libpimon/*.py libpimon/
