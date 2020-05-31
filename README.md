@@ -2,7 +2,7 @@
 
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/clambin/pimon?color=green&label=Release&style=plastic)
 ![Codecov](https://img.shields.io/codecov/c/gh/clambin/pimon?style=plastic)
-![Gitlab pipeline status (branch)](https://img.shields.io/gitlab/pipeline/clambin/pimon/develop?style=plastic)
+![Gitlab pipeline status (branch)](https://img.shields.io/gitlab/pipeline/clambin/pimon/master?style=plastic)
 ![GitHub](https://img.shields.io/github/license/clambin/pimon?style=plastic)
 
 Collects metrics from my Raspberry PI and reports them to Prometheus.  Currently supports:
