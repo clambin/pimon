@@ -59,7 +59,8 @@ class OpenVPNProbe(FileProbe):
 
 
 class OpenVPNStatusProbe(APIProbe):
-    def __init__(self, proxies=None):
+    def __init__(self, token=None, proxies=None):
+        self.token = token
         proxy_dict = None
         if proxies:
             proxy_dict = {proxy.split(':')[0]: proxy for proxy in proxies.split(',')}
@@ -70,7 +71,7 @@ class OpenVPNStatusProbe(APIProbe):
 
     def measure(self):
         try:
-            response = self.get()
+            response = self.get(params={'token': self.token} if self.token else None)
             logging.debug(f'response: {response.status_code} - {response.json()}')
             if response.status_code == 200:
                 return True

@@ -9,7 +9,7 @@ def test_initialise():
     config = argparse.Namespace(interval=0, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
-                                monitor_vpn=True, monitor_vpn_client_status='client.status', monitor_vpn_proxies='',
+                                monitor_vpn=True, monitor_vpn_client_status='client.status', monitor_vpn_status=False,
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp',
                                 monitor_mediaserver=False)
@@ -25,7 +25,7 @@ def test_bad_temp_filename():
     config = argparse.Namespace(interval=0, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
-                                monitor_vpn=True, monitor_vpn_client_status='client.status', monitor_vpn_proxies='',
+                                monitor_vpn=True, monitor_vpn_client_status='client.status', monitor_vpn_status=False,
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='notafile',
                                 monitor_mediaserver=False)
@@ -40,7 +40,7 @@ def test_bad_fan_pin():
     config = argparse.Namespace(interval=0, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=-1,
-                                monitor_vpn=True, monitor_vpn_client_status='client.status', monitor_vpn_proxies='',
+                                monitor_vpn=True, monitor_vpn_client_status='client.status', monitor_vpn_status=False,
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp',
                                 monitor_mediaserver=False)
@@ -55,7 +55,7 @@ def test_bad_vpn_file():
     config = argparse.Namespace(interval=0, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
-                                monitor_vpn=True, monitor_vpn_client_status='notafile', monitor_vpn_proxies='',
+                                monitor_vpn=True, monitor_vpn_client_status='notafile', monitor_vpn_status=False,
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp',
                                 monitor_mediaserver=False)
@@ -70,9 +70,8 @@ def test_pimon():
     config = argparse.Namespace(interval=0, port=8080,
                                 monitor_cpu=True, monitor_cpu_sysfs='.',
                                 monitor_fan=True, monitor_fan_pin=18,
-                                monitor_vpn=True, monitor_vpn_client_status='client.status', monitor_vpn_proxies='',
+                                monitor_vpn=True, monitor_vpn_client_status='client.status', monitor_vpn_status=False,
                                 once=True, stub=True, debug=True,
                                 freq_filename='freq', temp_filename='temp',
                                 monitor_mediaserver=False)
     assert pimon(config) == 0
-

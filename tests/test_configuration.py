@@ -43,7 +43,7 @@ def test_default_config():
     assert config.temp_filename == '/sys/devices/virtual/thermal/thermal_zone0/temp'
     assert config.monitor_vpn is False
     assert config.monitor_vpn_client_status == 'client.status'
-    assert config.monitor_vpn_proxies == ''
+    assert config.monitor_vpn_status is False
     assert config.monitor_mediaserver is False
     assert config.monitor_mediaserver_transmission == ''
     assert config.monitor_mediaserver_sonarr == ''

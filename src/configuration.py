@@ -45,7 +45,11 @@ def get_configuration(args=None):
                         help='Enable/disable OpenVPN client metrics (default: off)')
     parser.add_argument('--monitor-vpn-client-status', default=default_vpn_client_status,
                         help='OpenVPN client status file')
-    parser.add_argument('--monitor-vpn-proxies', default='',
+    parser.add_argument('--monitor-vpn-status', type=str2bool, nargs='?', default=False,
+                        help='Enable/disable OpenVPN client status monitoring (default: off)')
+    parser.add_argument('--monitor-vpn-status-token', default='',
+                        help='Token for https://ipinfo.io')
+    parser.add_argument('--monitor-vpn-status-proxies', default='',
                         help='Comma-separated list of OpenVPN proxies to use to check connectivity. '
                              'Requires running a proxy alongside the openvpn server (eg haugene/transmission-openvpn)')
     # Media server monitoring
