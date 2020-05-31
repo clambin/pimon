@@ -5,7 +5,7 @@ try:
     import RPi.GPIO as GPIO
 except ModuleNotFoundError:
     # Use a stub instead
-    import libpimon.GPIOstub as GPIO
+    import src.GPIOstub as GPIO
 
 
 GAUGE = Gauge('pimon_fan', 'Status of RPi fan')

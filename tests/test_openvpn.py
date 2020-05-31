@@ -1,6 +1,6 @@
 import pytest
 import requests
-from libpimon.openvpn import OpenVPNProbe, OpenVPNStatusProbe
+from src.openvpn import OpenVPNProbe, OpenVPNStatusProbe
 
 
 def test_vpn():

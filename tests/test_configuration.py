@@ -1,6 +1,6 @@
 import argparse
 import pytest
-from libpimon.configuration import str2bool, get_configuration
+from src.configuration import str2bool, get_configuration
 
 
 def test_str2bool():

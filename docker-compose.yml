@@ -2,7 +2,7 @@ version: '2'
 services:
     pimon:
         build: .
-        container_name: libpimon
+        container_name: pimon
         image: clambin/pimon:latest
         command: --sys /host/sys
         volumes:

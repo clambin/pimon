@@ -62,10 +62,7 @@ class OpenVPNStatusProbe(APIProbe):
     def __init__(self, proxies=None):
         proxy_dict = None
         if proxies:
-            proxy_dict = {}
-            for proxy in proxies.split(','):
-                key = proxy.split(':')[0]
-                proxy_dict[key] = proxy
+            proxy_dict = {proxy.split(':')[0]: proxy for proxy in proxies.split(',')}
         super().__init__('https://ipinfo.io', proxies=proxy_dict)
 
     def report(self, output):

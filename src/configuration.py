@@ -1,6 +1,6 @@
 import argparse
 
-from libpimon.version import version
+from src.version import version
 
 
 def str2bool(v):

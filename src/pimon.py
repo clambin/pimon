@@ -3,12 +3,12 @@
 
 import logging
 from prometheus_client import start_http_server
-from libpimon.version import version
-from libpimon.configuration import print_configuration
-from libpimon.cpu import CPUTempProbe, CPUFreqProbe
-from libpimon.gpio import GPIOProbe
-from libpimon.openvpn import OpenVPNProbe, OpenVPNStatusProbe
-from libpimon.mediacentre import TransmissionProbe, MonitorProbe
+from src.version import version
+from src.configuration import print_configuration
+from src.cpu import CPUTempProbe, CPUFreqProbe
+from src.gpio import GPIOProbe
+from src.openvpn import OpenVPNProbe, OpenVPNStatusProbe
+from src.mediacentre import TransmissionProbe, MonitorProbe
 from pimetrics.scheduler import Scheduler
 
 

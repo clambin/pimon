@@ -25,7 +25,7 @@ COPY Pipfile Pipfile.lock ./
 RUN pipenv install --system --ignore-pipfile
 
 COPY pimon.py ./
-COPY libpimon/*.py libpimon/
+COPY src src/
 
 EXPOSE 8080
 
