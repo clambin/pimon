@@ -1,27 +1,32 @@
 stages:
-  - test
+  - unittest
   - build
-  - smoke
+  - qa
   - release
 
+# Don't run for new tags
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
+
 .test_only:
-  only:
-    changes:
-      - "*.py"
-      - "pimon/*.py"
-      - "tests/*.py"
-  except:
-    - tags
+  rules:
+    - changes:
+        - "*.py"
+        - "libpimon/*.py"
+        - "tests/*.py"
+        - "Pipfile*"
 
 .build_only:
-  only:
-    changes:
-      - "*.py"
-      - "pimon/*.py"
-      - "Dockerfile*"
-      - .gitlab-ci.yml
-  except:
-    - tags
+  rules:
+    - changes:
+        - "*.py"
+        - "libpimon/*.py"
+        - "Pipfile*"
+        - "Dockerfile*"
+        - .gitlab-ci.yml
 
 .docker:
   image: docker:stable
@@ -38,14 +43,6 @@ stages:
     - docker
     - shared
   before_script:
-    - export VERSION=$(grep -i ^version pimon/version.py | awk '{ print $3 }' | tr -d \');
-    - if [[ $CI_COMMIT_REF_NAME == "master" ]]; then
-         export TAG=$VERSION;
-      elif [[ $CI_COMMIT_REF_NAME == "release-$VERSION" ]]; then
-         export TAG="dev-$VERSION";
-      else
-         export TAG="dev";
-      fi
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USER" --password-stdin
     - export CI_PROJECT_PATH=$(echo $CI_PROJECT_PATH | tr "[:upper:]" "[:lower:]")
 
@@ -57,44 +54,44 @@ stages:
     - rpi
 
 flake8:
-  stage: test
+  stage: unittest
   extends: .test_only
   image: python:3.7
   before_script:
-    - pip install pipenv
-    - pipenv install --dev
+    - pip install flake8
   script:
-    - pipenv run flake8 --max-line-length 120 *.py pimon/*.py
+    - flake8 --max-line-length 120 *.py libpimon/*.py
 
 pytest:
-  stage: test
+  stage: unittest
   extends: .test_only
   image: python:3.7
   before_script:
     - pip install pipenv
     - pipenv install --dev
+    - pip install proxy.py
   script:
-    - pipenv check
+    - proxy --port 8888 &
+    - PROXY_PID=$!
     - cd tests && pipenv run pytest --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
+    - kill $PROXY_PID
   artifacts:
     reports:
       junit: tests/report.xml
 
-prometheus:
-  stage: test
+sast:
+  stage: unittest
   extends: .test_only
   image: python:3.7
   before_script:
-    - pip install pipenv
-    - pipenv install
+    #- pip install pipenv
+    # pipenv install --dev
+    - pip install bandit
   script:
-    - pipenv run python pimon.py --port 8080 --stub --debug --interval 1 &
-    - TESTPID=$!
-    - sleep 5
-    - curl -s localhost:8080/metric | grep '^pimon_clockspeed '
-    - curl -s localhost:8080/metric | grep '^pimon_temperature '
-    - kill $TESTPID
+    # workaround for https://github.com/pypa/pipenv/issues/4188
+    #- PIPENV_PYUP_API_KEY="" pipenv check
+    - bandit -r libpimon/*.py
 
 build_arm:
   stage: build
@@ -103,36 +100,54 @@ build_arm:
     - .build_only
   script:
     - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-    - docker pull "$CI_PROJECT_PATH":"$TAG" && CACHE="--cache-from $CI_PROJECT_PATH:$TAG"
-    - docker build $CACHE --pull -t "$CI_PROJECT_PATH":"$TAG" .
-    - docker push "$CI_PROJECT_PATH":"$TAG"
+    - docker pull $CI_PROJECT_PATH:build || true
+    - docker build --cache-from $CI_PROJECT_PATH:build --pull -t $CI_PROJECT_PATH:build .
+    - docker push $CI_PROJECT_PATH:build
 
 test_arm:
-  stage : smoke
+  stage : qa
   extends:
     - .docker_arm
     - .build_only
   script:
-    - docker run -v $(pwd)/tests:/app/tests "$CI_PROJECT_PATH":"$TAG" --once --stub --debug --monitor-fan=False
+    - apk add --update curl
+    - docker pull $CI_PROJECT_PATH:build
+    - docker run -v $(pwd)/tests:/app/tests -p 8080:8080 --name pimon --rm -d $CI_PROJECT_PATH:build --debug --monitor-fan=False
+    - sleep 5
+    - curl -s docker:8080/metric | grep '^pimon_clockspeed '
+    - curl -s docker:8080/metric | grep '^pimon_temperature '
+    - docker stop pimon
 
-publish:
+
+publish_nonmaster:
   stage: release
   extends: .docker
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master"
   script:
-    - docker pull "$CI_PROJECT_PATH":"$TAG"
-    - docker tag "$CI_PROJECT_PATH":"$TAG"  "$CI_PROJECT_PATH":latest
-    - docker push "$CI_PROJECT_PATH":latest
+    - docker pull $CI_PROJECT_PATH:build
+    - docker tag $CI_PROJECT_PATH:build $CI_PROJECT_PATH:$CI_COMMIT_BRANCH
+    - docker push $CI_PROJECT_PATH:$CI_COMMIT_BRANCH
+
+publish_master:
+  stage: release
+  extends: .docker
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+  script:
+    - VERSION=$(grep -i ^version libpimon/version.py | awk '{ print $3 }' | tr -d \');
+    - docker pull $CI_PROJECT_PATH:build
+    - docker tag $CI_PROJECT_PATH:build $CI_PROJECT_PATH:$VERSION
+    - docker push $CI_PROJECT_PATH:$VERSION
+    - docker tag $CI_PROJECT_PATH:build $CI_PROJECT_PATH:latest
+    - docker push $CI_PROJECT_PATH:latest
 
 github:
   stage: release
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   before_script:
-    - export VERSION=$(grep -i ^version pimon/version.py | awk '{ print $3 }' | tr -d \');
+    - VERSION=$(grep -i ^version libpimon/version.py | awk '{ print $3 }' | tr -d \');
   script:
     - git remote set-url origin "https://$GITHUB_USER:$GITHUB_TOKEN@github.com/$CI_PROJECT_PATH.git"
     - git tag $VERSION

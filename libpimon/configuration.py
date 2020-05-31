@@ -1,6 +1,6 @@
 import argparse
 
-from pimon import version
+from libpimon.version import version
 
 
 def str2bool(v):
@@ -44,20 +44,23 @@ def get_configuration(args=None):
     parser.add_argument('--monitor-vpn', type=str2bool, nargs='?', default=False,
                         help='Enable/disable OpenVPN client metrics (default: off)')
     parser.add_argument('--monitor-vpn-client-status', default=default_vpn_client_status,
-                        help=f'OpenVPN client status file')
+                        help='OpenVPN client status file')
+    parser.add_argument('--monitor-vpn-proxies', default='',
+                        help='Comma-separated list of OpenVPN proxies to use to check connectivity. '
+                             'Requires running a proxy alongside the openvpn server (eg haugene/transmission-openvpn)')
     # Media server monitoring
     parser.add_argument('--monitor-mediaserver', type=str2bool, nargs='?', default=False,
                         help='Enable/disable mediaserver metrics (default: off')
     parser.add_argument('--monitor-mediaserver-transmission', default='',
-                        help=f'Transmission address (<host>:<port>)')
+                        help='Transmission address (<host>:<port>)')
     parser.add_argument('--monitor-mediaserver-sonarr', default='',
-                        help=f'Sonarr address (<host>:<port>)')
+                        help='Sonarr address (<host>:<port>)')
     parser.add_argument('--monitor-mediaserver-sonarr-apikey', default='',
-                        help=f'Sonarr API Key')
+                        help='Sonarr API Key')
     parser.add_argument('--monitor-mediaserver-radarr', default='',
-                        help=f'Radarr address (<host>:<port>)')
+                        help='Radarr address (<host>:<port>)')
     parser.add_argument('--monitor-mediaserver-radarr-apikey', default='',
-                        help=f'Radarr API Key')
+                        help='Radarr API Key')
     args = parser.parse_args(args)
     setattr(args, 'temp_filename',
             'tests/temp' if args.stub else

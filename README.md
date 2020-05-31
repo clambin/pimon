@@ -1,10 +1,15 @@
 # pimon
 
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/clambin/pimon?color=green&label=Release&style=plastic)
+![Codecov](https://img.shields.io/codecov/c/gh/clambin/pimon?style=plastic)
+![Gitlab pipeline status (branch)](https://img.shields.io/gitlab/pipeline/clambin/pimon/develop?style=plastic)
+![GitHub](https://img.shields.io/github/license/clambin/pimon?style=plastic)
+
 Collects metrics from my Raspberry PI and reports them to Prometheus.  Currently supports:
 
 * CPU temperature & frequency
 * Fan status (currently only supports the pimoroni shim fan; contact me if you use something else)
-* OpenVPN client statistics
+* OpenVPN status & client statistics
 * Transmission, Sonarr & Radarr statistics
 
 ## Getting started
@@ -48,6 +53,7 @@ Pimon exposes the following metrics to Prometheus:
 * openvpn_client_tcp_udp_write_bytes_total
 * openvpn_client_tun_tap_read_bytes_total
 * openvpn_client_tun_tap_write_bytes_total
+* openvpn_client_status
 * mediaserver_active_torrent_count
 * mediaserver_paused_torrent_count
 * mediaserver_download_speed
@@ -62,17 +68,18 @@ Pimon exposes the following metrics to Prometheus:
 The following command line arguments can be passed to pimon:
 
 ```
-usage: main.py [-h] [--version] [--interval INTERVAL] [--port PORT] [--once]
-               [--stub] [--debug] [--monitor-cpu [MONITOR_CPU]]
-               [--monitor-cpu-sysfs MONITOR_CPU_SYSFS]
-               [--monitor-fan [MONITOR_FAN]] [--monitor-vpn [MONITOR_VPN]]
-               [--monitor-vpn-client-status MONITOR_VPN_CLIENT_STATUS]
-               [--monitor-mediaserver [MONITOR_MEDIASERVER]]
-               [--monitor-mediaserver-transmission MONITOR_MEDIASERVER_TRANSMISSION]
-               [--monitor-mediaserver-sonarr MONITOR_MEDIASERVER_SONARR]
-               [--monitor-mediaserver-sonarr-apikey MONITOR_MEDIASERVER_SONARR_APIKEY]
-               [--monitor-mediaserver-radarr MONITOR_MEDIASERVER_RADARR]
-               [--monitor-mediaserver-radarr-apikey MONITOR_MEDIASERVER_RADARR_APIKEY]
+usage: pimon.py [-h] [--version] [--interval INTERVAL] [--port PORT] [--once]
+                [--stub] [--debug] [--monitor-cpu [MONITOR_CPU]]
+                [--monitor-cpu-sysfs MONITOR_CPU_SYSFS]
+                [--monitor-fan [MONITOR_FAN]] [--monitor-vpn [MONITOR_VPN]]
+                [--monitor-vpn-client-status MONITOR_VPN_CLIENT_STATUS]
+                [--monitor-vpn-proxies MONITOR_VPN_PROXIES]
+                [--monitor-mediaserver [MONITOR_MEDIASERVER]]
+                [--monitor-mediaserver-transmission MONITOR_MEDIASERVER_TRANSMISSION]
+                [--monitor-mediaserver-sonarr MONITOR_MEDIASERVER_SONARR]
+                [--monitor-mediaserver-sonarr-apikey MONITOR_MEDIASERVER_SONARR_APIKEY]
+                [--monitor-mediaserver-radarr MONITOR_MEDIASERVER_RADARR]
+                [--monitor-mediaserver-radarr-apikey MONITOR_MEDIASERVER_RADARR_APIKEY]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -92,6 +99,10 @@ optional arguments:
                         Enable/disable OpenVPN client metrics (default: off)
   --monitor-vpn-client-status MONITOR_VPN_CLIENT_STATUS
                         OpenVPN client status file
+  --monitor-vpn-proxies MONITOR_VPN_PROXIES
+                        Comma-separated list of OpenVPN proxies to use to
+                        check connectivity. Requires running a proxy alongside
+                        the openvpn server (eg haugene/transmission-openvpn)
   --monitor-mediaserver [MONITOR_MEDIASERVER]
                         Enable/disable mediaserver metrics (default: off
   --monitor-mediaserver-transmission MONITOR_MEDIASERVER_TRANSMISSION

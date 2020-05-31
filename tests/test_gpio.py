@@ -1,5 +1,5 @@
 import pytest
-from pimon.gpio import GPIOProbe
+from libpimon.gpio import GPIOProbe
 
 
 def test_gpio():

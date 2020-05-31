@@ -1,5 +1,6 @@
 import pytest
-from pimon.openvpn import OpenVPNProbe
+import requests
+from libpimon.openvpn import OpenVPNProbe, OpenVPNStatusProbe
 
 
 def test_vpn():
@@ -20,3 +21,15 @@ def test_vpn():
 def test_bad_file():
     with pytest.raises(FileNotFoundError):
         probe = OpenVPNProbe('notafile')
+
+
+def test_status():
+    probe = OpenVPNStatusProbe()
+    probe.run()
+    assert probe.measured() is True
+
+
+def test_status_with_proxy():
+    probe = OpenVPNStatusProbe(proxies="https://localhost:8888")
+    probe.run()
+    assert probe.measured() is True

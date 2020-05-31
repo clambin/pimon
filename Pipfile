@@ -7,11 +7,10 @@ verify_ssl = true
 pytest = "*"
 pytest-cov = "*"
 codecov = "*"
-flake8 = "*"
 
 [packages]
 prometheus-client = "==0.7.1"
-pimetrics = "*"
+pimetrics = "==0.3.0"
 requests = "*"
 
 [requires]
