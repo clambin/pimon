@@ -44,11 +44,11 @@ def initialise(config):
             )
         except FileNotFoundError as err:
             logging.warning(f'Could not add OpenVPN monitor: {err}')
-        if config.monitor_vpn_status:
-            scheduler.register(
-                OpenVPNStatusProbe(config.monitor_vpn_proxies),
-                60
-            )
+    if config.monitor_vpn_status:
+        scheduler.register(
+            OpenVPNStatusProbe(token=config.monitor_vpn_status_token, proxies=config.monitor_vpn_status_proxies),
+            60
+        )
     if config.monitor_mediaserver:
         if config.monitor_mediaserver_transmission:
             scheduler.register(
