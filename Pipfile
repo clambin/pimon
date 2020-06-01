@@ -9,8 +9,8 @@ pytest-cov = "*"
 codecov = "*"
 
 [packages]
-prometheus-client = "==0.8.0"
-pimetrics = "==0.3.0"
+prometheus-client = "*"
+pimetrics = "*"
 requests = "*"
 
 [requires]
