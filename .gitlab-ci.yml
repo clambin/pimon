@@ -18,6 +18,7 @@ workflow:
         - "src/*.py"
         - "tests/*.py"
         - "Pipfile*"
+        - .gitlab-ci.yml
 
 .build_only:
   rules:
@@ -69,8 +70,9 @@ pytest:
   before_script:
     - pip install pipenv
     - pipenv install --dev
-    - pip install proxy.py
+    #- pip install proxy.py
   script:
+    - pipenv check
     - proxy --port 8888 &
     - PROXY_PID=$!
     - cd tests && pipenv run pytest --cov --junitxml=report.xml
@@ -85,12 +87,8 @@ sast:
   extends: .test_only
   image: python:3.8
   before_script:
-    #- pip install pipenv
-    # pipenv install --dev
     - pip install bandit
   script:
-    # workaround for https://github.com/pypa/pipenv/issues/4188
-    #- PIPENV_PYUP_API_KEY="" pipenv check
     - bandit -r src/*.py
 
 build_arm:
