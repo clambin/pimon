@@ -6,7 +6,7 @@ def test_cpufreq_probe():
     freq = CPUFreqProbe('./freq')
     freq.run()
     assert freq.measured() == 1500000
-    temp = CPUTempProbe('./temp', 1000)
+    temp = CPUTempProbe('./temp')
     temp.run()
     assert temp.measured() == 41.381
 

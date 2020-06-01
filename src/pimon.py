@@ -1,6 +1,3 @@
-# Copyright 2020 by Christophe Lambin
-# All rights reserved.
-
 import logging
 from prometheus_client import start_http_server
 from src.version import version
@@ -23,7 +20,7 @@ def initialise(config):
                 5
             )
             scheduler.register(
-                CPUTempProbe(config.temp_filename, 1000),
+                CPUTempProbe(config.temp_filename),
                 5
             )
         except FileNotFoundError as err:
@@ -47,7 +44,7 @@ def initialise(config):
     if config.monitor_vpn_status:
         scheduler.register(
             OpenVPNStatusProbe(token=config.monitor_vpn_status_token, proxies=config.monitor_vpn_status_proxies),
-            60
+            300
         )
     if config.monitor_mediaserver:
         if config.monitor_mediaserver_transmission:
@@ -60,14 +57,14 @@ def initialise(config):
                 MonitorProbe(
                     config.monitor_mediaserver_sonarr, MonitorProbe.App.sonarr,
                     config.monitor_mediaserver_sonarr_apikey),
-                60
+                300
             )
         if config.monitor_mediaserver_radarr:
             scheduler.register(
                 MonitorProbe(
                     config.monitor_mediaserver_radarr, MonitorProbe.App.radarr,
                     config.monitor_mediaserver_radarr_apikey),
-                60
+                300
             )
     return scheduler
 
