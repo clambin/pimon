@@ -33,50 +33,23 @@ def get_configuration(args=None):
     parser.add_argument('--debug', action='store_true',
                         help='Set logging level to debug')
     # CPU monitoring
-    parser.add_argument('--monitor-cpu', type=str2bool, nargs='?', default=True,
-                        help='Enable/Disable monitoring the CPU status (default: on)')
-    parser.add_argument('--monitor-cpu-sysfs', default=default_sys,
+    parser.add_argument('--sysfs', default=default_sys,
                         help=f'Location of the /sys filesystem (default: {default_sys})')
     # Fan status monitoring
-    parser.add_argument('--monitor-fan', type=str2bool, nargs='?', default=True,
+    parser.add_argument('--fan', type=str2bool, nargs='?', default=True,
                         help='Enable/Disable monitoring the fan status (default: on)')
-    # OpenVPN monitoring
-    parser.add_argument('--monitor-vpn', type=str2bool, nargs='?', default=False,
-                        help='Enable/disable OpenVPN client metrics (default: off)')
-    parser.add_argument('--monitor-vpn-client-status', default=default_vpn_client_status,
-                        help='OpenVPN client status file')
-    parser.add_argument('--monitor-vpn-status', type=str2bool, nargs='?', default=False,
-                        help='Enable/disable OpenVPN client status monitoring (default: off)')
-    parser.add_argument('--monitor-vpn-status-token', default='',
-                        help='Token for https://ipinfo.io')
-    parser.add_argument('--monitor-vpn-status-proxies', default='',
-                        help='Comma-separated list of OpenVPN proxies to use to check connectivity. '
-                             'Requires running a proxy alongside the openvpn server (eg haugene/transmission-openvpn)')
-    # Media server monitoring
-    parser.add_argument('--monitor-mediaserver', type=str2bool, nargs='?', default=False,
-                        help='Enable/disable mediaserver metrics (default: off')
-    parser.add_argument('--monitor-mediaserver-transmission', default='',
-                        help='Transmission address (<host>:<port>)')
-    parser.add_argument('--monitor-mediaserver-sonarr', default='',
-                        help='Sonarr address (<host>:<port>)')
-    parser.add_argument('--monitor-mediaserver-sonarr-apikey', default='',
-                        help='Sonarr API Key')
-    parser.add_argument('--monitor-mediaserver-radarr', default='',
-                        help='Radarr address (<host>:<port>)')
-    parser.add_argument('--monitor-mediaserver-radarr-apikey', default='',
-                        help='Radarr API Key')
     args = parser.parse_args(args)
     setattr(args, 'temp_filename',
             'tests/temp' if args.stub else
-            f'{args.monitor_cpu_sysfs}/devices/virtual/thermal/thermal_zone0/temp')
+            f'{args.sysfs}/devices/virtual/thermal/thermal_zone0/temp')
     setattr(args, 'freq_filename',
             'tests/freq' if args.stub else
-            f'{args.monitor_cpu_sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
+            f'{args.sysfs}/devices/system/cpu/cpufreq/policy0/scaling_cur_freq')
 
     # Pimoroni fan shim uses pin 18 of the GPIO to control the fan
     # No need to make this an argument (yet), but we'll already put it in configuration
     # We'll use this in test_pimon to trigger an exception when accessing the GPIO
-    setattr(args, 'monitor_fan_pin', 18)
+    setattr(args, 'fan_pin', 18)
     return args
 
 

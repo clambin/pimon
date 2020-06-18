@@ -16,4 +16,3 @@ def test_cpufreq_badfile():
         CPUFreqProbe('./nosuchfile')
     with pytest.raises(FileNotFoundError):
         CPUTempProbe('./nosuchfile')
-
