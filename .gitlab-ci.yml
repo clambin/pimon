@@ -70,14 +70,10 @@ pytest:
   before_script:
     - pip install pipenv
     - pipenv install --dev
-    #- pip install proxy.py
   script:
     - pipenv check
-    - proxy --port 8888 &
-    - PROXY_PID=$!
     - cd tests && pipenv run pytest --cov --junitxml=report.xml
     - pipenv run bash <(curl -s https://codecov.io/bash) -s tests
-    - kill $PROXY_PID
   artifacts:
     reports:
       junit: tests/report.xml

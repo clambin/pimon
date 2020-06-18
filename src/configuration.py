@@ -18,7 +18,6 @@ def get_configuration(args=None):
     default_interval = 5
     default_port = 8080
     default_sys = '/sys'
-    default_vpn_client_status = 'client.status'
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--version', action='version', version=f'%(prog)s {version}')
